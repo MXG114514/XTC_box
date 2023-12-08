@@ -1,0 +1,82 @@
+Widget > QLabel {
+    font: 24px 'Segoe UI', 'Microsoft YaHei';
+}
+
+Widget {
+    border: 1px solid rgb(29, 29, 29);
+    border-right: none;
+    border-bottom: none;
+    border-top-left-radius: 10px;
+    background-color: rgb(39, 39, 39);
+}
+
+Main_Window {
+    background-color: rgb(32, 32, 32);
+}
+
+
+StandardTitleBar {
+    background-color: rgb(32, 32, 32);
+}
+
+StandardTitleBar > QLabel,
+Widget > QLabel {
+    color: white;
+}
+
+
+MinimizeButton {
+    qproperty-normalColor: white;
+    qproperty-normalBackgroundColor: transparent;
+    qproperty-hoverColor: white;
+    qproperty-hoverBackgroundColor: rgba(255, 255, 255, 26);
+    qproperty-pressedColor: white;
+    qproperty-pressedBackgroundColor: rgba(255, 255, 255, 51)
+}
+
+
+MaximizeButton {
+    qproperty-normalColor: white;
+    qproperty-normalBackgroundColor: transparent;
+    qproperty-hoverColor: white;
+    qproperty-hoverBackgroundColor: rgba(255, 255, 255, 26);
+    qproperty-pressedColor: white;
+    qproperty-pressedBackgroundColor: rgba(255, 255, 255, 51)
+}
+
+CloseButton {
+    qproperty-normalColor: white;
+    qproperty-normalBackgroundColor: transparent;
+}
+
+.QFrame,.QGroupBox,.ListWidget {
+    border: 1px solid rgb(46, 46, 46);
+    border-radius: 10px;
+    background-color: rgba(39, 39, 39, 0.95);
+}
+
+.QFrame:hover,.ListWidget:hover {
+    background-color: rgba(39, 39, 39, 0.93);
+    border: 1px solid rgb(66, 66, 66);
+}
+.QGroupBox:hover {
+    background-color: rgba(39, 39, 39, 0.93);
+    border: 1px solid rgb(66, 66, 66);
+}
+.ListWidget:hover{
+    background-color: rgba(39, 39, 39, 0.93);
+    border: 1px solid rgb(66, 66, 66);
+}
+QLabel {color:white}
+
+.QFrame#frame_2 {border:none;background-color: rgba(39, 39, 39, 0.95);}
+.QFrame#apk_info_frame {border:none;background-color: rgba(39, 39, 39, 0.95);}
+
+.ScrollArea{background-color:rgba(39, 39, 39, 0.95);border:0px}
+
+TableWidget#tableWidget{border: 1px solid rgb(66, 66, 66)}
+
+.QFrame#device_frame{background-color:transparent;border:0px}
+.QFrame#device_frame:hover{background-color:transparent;border:0px}
+.QFrame#scrollAreaWidgetContents_main{background-color: rgb(29, 29, 29);border:0px}
+.QGroupBox{color:white}

@@ -1,0 +1,60 @@
+Widget > QLabel {
+    font: 24px 'Segoe UI', 'Microsoft YaHei';
+}
+
+Widget {
+    border: 1px solid rgb(229, 229, 229);
+    border-right: none;
+    border-bottom: none;
+    border-top-left-radius: 10px;
+    background-color: rgb(249, 249, 249);
+}
+
+Main_Window {
+    background-color: rgb(243, 243, 243);
+}
+
+titleLabel {
+    font: 18px 'Segoe UI', '微软雅黑', 'PingFang SC';
+    color: black;
+}
+.QFrame,.QGroupBox {
+    border: 1px solid rgb(234, 234, 234);
+    border-radius: 10px;
+    background-color: rgba(249, 249, 249, 0.95);
+}
+
+.QFrame:hover,.QGroupBox:hover {
+    background-color: rgba(249, 249, 249, 0.93);
+    border: 1px solid rgb(220, 220, 220);
+}
+.QFrame#frame_2 {border:none}
+.QFrame#apk_info_frame {border:none}
+
+MinimizeButton {
+    qproperty-normalColor: black;
+    qproperty-normalBackgroundColor: transparent;
+    qproperty-hoverColor: black;
+    qproperty-hoverBackgroundColor: rgba(0, 0, 0, 26);
+    qproperty-pressedColor: black;
+    qproperty-pressedBackgroundColor: rgba(0, 0, 0, 51)
+}
+
+
+MaximizeButton {
+    qproperty-normalColor: black;
+    qproperty-normalBackgroundColor: transparent;
+    qproperty-hoverColor: black;
+    qproperty-hoverBackgroundColor: rgba(0, 0, 0, 26);
+    qproperty-pressedColor: black;
+    qproperty-pressedBackgroundColor: rgba(0, 0, 0, 51)
+}
+
+CloseButton {
+    qproperty-normalColor: black;
+    qproperty-normalBackgroundColor: transparent;
+}
+ScrollArea{background-color:rgba(249, 249, 249, 0.93);border:0px}
+.QFrame#device_frame{background-color:transparent;border:0px}
+.QFrame#device_frame:hover{background-color:transparent;border:0px}
+.QGroupBox{color:black}
