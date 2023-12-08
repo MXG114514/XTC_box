@@ -7,4 +7,4 @@
 
 使用该代码安装:pip install "PyQt-Fluent-Widgets[full]" -i https://pypi.org/simple/
 
-你也可以访问https://pyqt-fluent-widgets.readthedocs.io/zh_CN/latest获取更多教程
+你也可以访问https://pyqt-fluent-widgets.readthedocs.io/zh_CN/latest 获取更多教程
