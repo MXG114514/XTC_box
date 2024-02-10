@@ -11,3 +11,6 @@ pip install "PyQt-Fluent-Widgets[full]" -i https://pypi.org/simple/
 ```
 
 你也可以访问https://pyqt-fluent-widgets.readthedocs.io/zh_CN/latest 获取更多教程
+
+# V0.4:
+完成了文件管理器（搜索功能可能有bug），修复了一些小bug
