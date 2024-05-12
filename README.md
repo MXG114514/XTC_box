@@ -14,3 +14,6 @@ pip install "PyQt-Fluent-Widgets[full]" -i https://pypi.org/simple/
 
 # V0.4:
 完成了文件管理器（搜索功能可能有bug），修复了一些小bug
+
+# V0.5:
+完成了屏幕工具和一键root工具，修复大量bug
