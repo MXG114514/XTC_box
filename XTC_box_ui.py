@@ -2,13 +2,13 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
 from qfluentwidgets import ProgressBar, PushButton
 from qfluentwidgets import IndeterminateProgressBar
-from config import cfg, HELP_URL, FEEDBACK_URL,VERSION
-from qfluentwidgets import (SettingCardGroup, SwitchSettingCard,
-                            OptionsSettingCard,
-                            HyperlinkCard, PrimaryPushSettingCard, ScrollArea,
+from config import cfg, HELP_URL, FEEDBACK_URL,VERSION,MyFluentIcon
+from qfluentwidgets import (SettingCardGroup, SwitchSettingCard,MessageBoxBase,
+                            OptionsSettingCard,IconWidget,SubtitleLabel,InfoBarIcon,
+                            HyperlinkCard, PrimaryPushSettingCard, ScrollArea,InfoBarPosition,
                             VBoxLayout, Theme, InfoBar, CustomColorSettingCard,
-                            setTheme, setThemeColor, isDarkTheme)
-from qfluentwidgets import DropDownToolButton, TableWidget,Action,RoundMenu,ListWidget, TextEdit, SearchLineEdit
+                            setTheme, setThemeColor, isDarkTheme,LineEdit,TransparentToolButton)
+from qfluentwidgets import DropDownToolButton, TableWidget,Action,RoundMenu,ListWidget, TextEdit, SearchLineEdit,PrimaryPushButton,CheckBox,BodyLabel,PrimaryToolButton,TitleLabel,ElevatedCardWidget
 from qfluentwidgets import FluentIcon as FIF,MessageBox
 from PyQt5.QtCore import Qt, pyqtSignal, QUrl
 from PyQt5.QtGui import QDesktopServices
@@ -18,8 +18,298 @@ from PIL.Image import open as openimg
 from re import findall,S
 from pyperclip import copy
 from threading import Thread
+from os import remove,listdir,path
 
 
+class ModelCard(ElevatedCardWidget):
+    def __init__(self,parent = None,name = None):
+        super().__init__(parent=parent)
+        self.model = name
+        self.state = False
+        self.on = ''
+        self.setMaximumSize(QtCore.QSize(140, 16777215))
+        self.verticalLayout_2 = QtWidgets.QVBoxLayout(self)
+        self.verticalLayout_2.setObjectName("verticalLayout_2")
+        self.icon = QtWidgets.QLabel(self)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Expanding)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.icon.sizePolicy().hasHeightForWidth())
+        self.icon.setSizePolicy(sizePolicy)
+        self.icon.setObjectName("icon")
+        self.verticalLayout_2.addWidget(self.icon)
+        self.name = TitleLabel(self)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Fixed)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.name.sizePolicy().hasHeightForWidth())
+        self.name.setSizePolicy(sizePolicy)
+        self.name.setScaledContents(False)
+        self.name.setAlignment(QtCore.Qt.AlignCenter)
+        self.name.setObjectName("name")
+        self.verticalLayout_2.addWidget(self.name)
+        self.name.setText(name)
+        self.icon.setText('icon')
+        self.clicked.connect(self.clickEvent)
+    def setState(self,state,name):
+        self.on = name
+        if state:
+            self.name.setStyleSheet('color:green')
+        else:
+            if isDarkTheme():
+                self.name.setStyleSheet('color:white')
+            else:
+                self.name.setStyleSheet('color:black')
+    def clickEvent(self):
+        for i in self.parent().children():
+            if i is not self:
+                try:
+                    i.setState(state=False,name = self.model)
+                except:pass
+        self.setState(state=True,name = self.model)
+class InputMessageBox(MessageBoxBase):
+    """ Custom message box """
+
+    def __init__(self, parent=None,title = '',placeholderText = ''):
+        super().__init__(parent)
+        self.titleLabel = SubtitleLabel(title, self)
+        self.urlLineEdit = LineEdit(self)
+
+        self.urlLineEdit.setPlaceholderText(placeholderText)
+        self.urlLineEdit.setClearButtonEnabled(True)
+
+        # add widget to view layout
+        self.viewLayout.addWidget(self.titleLabel)
+        self.viewLayout.addWidget(self.urlLineEdit)
+
+        # change the text of button
+        self.yesButton.setText("设置")
+        self.cancelButton.setText("取消")
+
+        self.widget.setMinimumWidth(360)
+        self.yesButton.setDisabled(True)
+        self.urlLineEdit.textChanged.connect(self._validateUrl)
+
+    def _validateUrl(self, text):
+        self.yesButton.setEnabled(QUrl(text).isValid())
+
+MultipleChoices = False
+class File_card(QtWidgets.QFrame):
+    clicked = pyqtSignal(QtWidgets.QFrame)
+    doubleClicked = pyqtSignal(str,str)
+    selected = pyqtSignal(bool)
+
+    def __init__(self, parent=None, name='',type='',path='',file_list=None):
+        super().__init__(parent=parent)
+        self.name = name
+        self.type = type
+        self.path = path
+        self.icon = FIF.FOLDER
+        self.file_list = file_list
+        self.isSelected = False
+        self.selected.connect(self.setSelected)
+
+        if self.type not in ['doc','link']:
+            if '.' not in self.name:
+                self.icon = FIF.DOCUMENT
+            else:
+                file_type = self.name.split('.')[-1].lower()
+                if file_type in ["mp4", "avi", "mov", "wmv", "flv"]:
+                    self.icon=FIF.VIDEO
+                elif file_type in ['txt']:
+                    self.icon = MyFluentIcon.TXT
+                elif file_type in ['zip','7z','rar']:
+                    self.icon = MyFluentIcon.ZIP
+                elif file_type in ["mp3", "cd", "flac", "wv", "ogg", "acc"]:
+                    self.icon = FIF.MEDIA
+                elif file_type in ["png", "jpg", "bmp", "gif", "ico", "jpeg", "rmvb", "webp"]:
+                    self.icon = FIF.PHOTO
+                elif file_type in ['apk']:
+                    self.icon = MyFluentIcon.APK
+                else:
+                    self.icon = FIF.DOCUMENT
+        self.iconWidget = IconWidget(self.icon, self)
+        self.setGeometry(200, 200, 300, 200)
+        self.setFixedSize(100, 120)
+        self.vBoxLayout = QtWidgets.QVBoxLayout(self)
+        self.vBoxLayout.setSpacing(0)
+        self.vBoxLayout.setContentsMargins(8, 28, 8, 0)
+        self.vBoxLayout.setAlignment(Qt.AlignHCenter)
+        self.iconWidget.setFixedSize(28, 28)
+        self.vBoxLayout.addWidget(self.iconWidget, 0, Qt.AlignHCenter)
+        self.vBoxLayout.addSpacing(14)
+        namelabel = WrapLabel(self)
+        text = namelabel.fontMetrics().elidedText(self.name, Qt.ElideMiddle, 160)
+        font = QtGui.QFont('微软雅黑', 10)
+        namelabel.setFont(font)
+        namelabel.setText(text)
+        namelabel.resize(90,120)
+        namelabel.clicked.connect(self.mouseReleaseEvent)
+        # namelabel.doubleClick.connect(lambda :self.doubleClicked.emit(self.name,self.type))
+        namelabel.setAlignment(Qt.AlignCenter)
+        self.vBoxLayout.addWidget(namelabel)
+
+    def mouseReleaseEvent(self, e = None):
+        self.setSelected(not self.isSelected)
+        self.clicked.emit(self)
+
+    def mouseDoubleClickEvent(self, a0: QtGui.QMouseEvent) -> None:
+        self.doubleClicked.emit(self.name,self.type)
+        super().mouseDoubleClickEvent(a0)
+
+    def setSelected(self, isSelected: bool, force=False):
+        try:
+            if isSelected == self.isSelected and not force:
+                return
+
+            self.isSelected = isSelected
+            if not isSelected:
+                self.iconWidget.setIcon(self.icon)
+            else:
+                icon = self.icon.icon(Theme.LIGHT if isDarkTheme() else Theme.DARK)
+                self.iconWidget.setIcon(icon)
+
+            self.setProperty('isSelected', isSelected)
+            self.setStyle(QtWidgets.QApplication.style())
+        except:
+            pass
+
+class File_list_widget(QtWidgets.QFrame):
+    signal=pyqtSignal(dict)
+    k=0
+    def __init__(self,parent=None):
+        super().__init__(parent)
+        self.choice = []
+        self.card = {}
+        self.widget = []
+        self.push_func = lambda name,show:()
+        self.chick_card_func = lambda :()
+        self.v=QtWidgets.QVBoxLayout(self)
+        self.ScrollArea = ScrollArea(self)
+        self.v.addWidget(self.ScrollArea)
+        self.v.setContentsMargins(0,0,0,0)
+        self.ScrollArea.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarAsNeeded)
+        self.ScrollArea.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarAsNeeded)
+        self.ScrollArea.setObjectName("file_area")
+        self.scrollWidget = QtWidgets.QFrame(self.ScrollArea)
+        self.scrollWidget.move(0,0)
+        self.resize(self.parent().width(),self.parent().height())
+        self.scrollWidget.setObjectName("file_widget")
+        self.ScrollArea.setWidget(self.scrollWidget)
+        self.signal.connect(lambda data:(self.setCards(data)))
+        self.update_func = lambda name:()
+        self.chioce_mode_widget = QtWidgets.QCheckBox()
+        self.setAcceptDrops(True)
+
+    def dragEnterEvent(self, e):
+        if e.mimeData().hasText():
+            e.accept()
+        else:
+            e.ignore()
+
+    def dropEvent(self, a0: QtGui.QDropEvent) -> None:
+        show = False
+        fileList = a0.mimeData().text().split('\n')
+        for i in fileList:
+            Thread(target=lambda :(self.push_func(i.replace('file:///',''),show))).start()
+        self.parent().parent().parent().show_info_singal.emit('传输成功!','')
+        a0.accept()
+
+    def CardSelected(self,widget:File_card):
+        try:
+            if not MultipleChoices:
+                for i in self.scrollWidget.children():
+                    i.setSelected(False)
+                self.choice.clear()
+                widget.setSelected(True)
+                self.choice.append(widget)
+            else:
+                widget.setSelected(widget.isSelected)
+                if widget.isSelected:
+                    self.choice.append(widget)
+                else:
+                    self.choice.remove(widget)
+            self.chick_card_func()
+        except:
+            pass
+    def selected_func(self,mode):
+        if mode == 'all':
+            self.chioce_mode_widget.setCheckState(Qt.Checked)
+            for i in self.widget:
+                i.setSelected(True)
+                self.choice.append(i)
+        elif mode == 'none':
+            for i in self.choice:
+                i.setSelected(False)
+            self.choice.clear()
+        elif mode in ['file','doc']:
+            for i in self.choice:
+                i.setSelected(False)
+            self.choice.clear()
+            self.chioce_mode_widget.setCheckState(Qt.Checked)
+            for i in self.widget:
+                if self.card[i.name] in ['file'] and mode == 'file':
+                    i.setSelected(True)
+                    self.choice.append(i)
+                elif self.card[i.name] not in ['file'] and mode == 'doc':
+                    i.setSelected(True)
+                    self.choice.append(i)
+        elif mode == 'reverse':
+            for i in self.widget:
+                if i not in self.choice:
+                    i.setSelected(True)
+                    self.choice.append(i)
+                else:
+                    i.setSelected(False)
+                    self.choice.remove(i)
+    def clear(self):
+        for i in self.scrollWidget.children():
+            i.deleteLater()
+    def get_pos(self,num:int):
+        pos = []
+        w = self.ScrollArea.width()
+        x = y = space = 8
+        card_width = 100
+        card_height = 120
+        self.k = w // (card_width+space)
+        self.k = self.k if self.k else 1
+        for i in range(num):
+            pos.append((x,y))
+            x += card_width + space
+            if x//(card_width+8) >= self.k:
+                x = 8
+                y += card_height + space
+        if num == 0:y=0
+        size = (w,y if not num%self.k else y+card_height+space)
+        return pos,size
+    def setCards(self,card_dict:dict):
+        pos,size=self.get_pos(len(card_dict.keys()))
+        self.card=card_dict
+        self.clear()
+        self.widget.clear()
+        n = 0
+        for card in card_dict.keys():
+            card_widget=File_card(self.scrollWidget,name=card,type=card_dict[card],path=card_dict[card],file_list=self)
+            card_widget.move(*pos[n])
+            card_widget.show()
+            card_widget.clicked.connect(self.CardSelected)
+            card_widget.doubleClicked.connect(self.update_func)
+            self.widget.append(card_widget)
+            n += 1
+        self.scrollWidget.resize(*size)
+        if not len(card_dict.keys()):
+            label = BodyLabel(self.scrollWidget)
+            label.setText('似乎是一个空目录')
+            label.move((self.scrollWidget.width()-label.width())//2,(self.scrollWidget.height()-label.height())//2)
+            label.show()
+        self.choice.clear()
+    def resizeEvent(self, a0: QtGui.QResizeEvent) -> None:
+        last=self.k
+        pos,size=self.get_pos(num=len(self.card))
+        self.scrollWidget.resize(*size)
+        if last != self.k:
+            self.setCards(self.card)
+        super().resizeEvent(a0)
 class App_list_widget(ListWidget):
     def __init__(self,parent=None):
         super(App_list_widget,self).__init__(parent)
@@ -50,12 +340,15 @@ class Apk_info_frame(QtWidgets.QFrame):
         self.ScrollArea.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarAsNeeded)
         self.ScrollArea.setWidgetResizable(True)
         self.ScrollArea.setObjectName("ScrollArea")
-        self.scrollAreaWidgetContents = QtWidgets.QFrame()
+        self.scrollAreaWidgetContents = QtWidgets.QFrame(self.ScrollArea)
         self.scrollAreaWidgetContents.setGeometry(QtCore.QRect(0, 0, 281, 301))
         self.scrollAreaWidgetContents.setObjectName("scrollAreaWidgetContents")
         self.verticalLayout_4 = QtWidgets.QVBoxLayout(self.scrollAreaWidgetContents)
         self.verticalLayout_4.setContentsMargins(0, 0, 0, 0)
         self.verticalLayout_4.setObjectName("verticalLayout_4")
+        self.p = IndeterminateProgressBar(self)
+        self.verticalLayout_4.addWidget(self.p)
+        self.p.hide()
         self.horizontalLayout_3 = QtWidgets.QHBoxLayout()
         self.horizontalLayout_3.setObjectName("horizontalLayout_3")
         self.label = QtWidgets.QLabel(self.scrollAreaWidgetContents)
@@ -159,6 +452,7 @@ class Apk_info_frame(QtWidgets.QFrame):
         self.file_size.setFont(font2)
         self.init()
     def init(self):
+        self.p.hide()
         self.pack_copy_btn.setEnabled(False)
         self.pack_copy_btn_2.setEnabled(False)
         self.real_name.setText( "应用名:--")
@@ -172,6 +466,7 @@ class Apk_info_frame(QtWidgets.QFrame):
         self.label.setMaximumSize(70, 70)
         self.label.setPixmap(QtGui.QPixmap("./img/Android.png"))
     def on_load(self):
+        self.p.show()
         self.pack_copy_btn.setEnabled(False)
         self.pack_copy_btn_2.setEnabled(False)
         self.real_name.setText( "应用名:加载中...")
@@ -189,6 +484,7 @@ class Apk_info_frame(QtWidgets.QFrame):
     def copy_activity(self):
         copy(self.acitivity_name.text().replace('activity名:', ''))
     def set_info(self,package,real_name,activity,sdk_ver,highest_ver,size,icon):
+        self.p.hide()
         self.real_name.setText(f"应用名:{real_name if real_name!='' else '--'}")
         self.pack_name.setText(f"包名:{package if package!='' else '--'}")
         self.acitivity_name.setText(f"activity名:{activity if activity!='' else '--'}")
@@ -262,21 +558,21 @@ class Apk_Path_TabelWidget(TableWidget):
 class Home_Form(object):
     def setupUi(self, Form):
         Form.setObjectName("Form")
-        Form.resize(830, 572)
-        self.verticalLayout_2 = QtWidgets.QVBoxLayout(Form)
-        self.verticalLayout_2.setContentsMargins(0, 0, 0, 0)
-        self.verticalLayout_2.setObjectName("verticalLayout_2")
+        Form.resize(846, 894)
+        Form.setStyleSheet("")
+        self.verticalLayout_4 = QtWidgets.QVBoxLayout(Form)
+        self.verticalLayout_4.setObjectName("verticalLayout_4")
         self.ScrollArea = ScrollArea(Form)
-        self.ScrollArea.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarAsNeeded)
+        self.ScrollArea.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
         self.ScrollArea.setSizeAdjustPolicy(QtWidgets.QAbstractScrollArea.AdjustToContentsOnFirstShow)
         self.ScrollArea.setWidgetResizable(True)
         self.ScrollArea.setObjectName("ScrollArea")
-        self.scrollAreaWidgetContents = QtWidgets.QFrame()
-        self.scrollAreaWidgetContents.setGeometry(QtCore.QRect(0, 0, 830, 770))
-        self.scrollAreaWidgetContents.setObjectName("scrollAreaWidgetContents_main")
-        self.verticalLayout_4 = VBoxLayout(self.scrollAreaWidgetContents)
-        self.verticalLayout_4.setContentsMargins(0,0,0,0)
-        self.verticalLayout_4.setObjectName("verticalLayout_4")
+        self.scrollAreaWidgetContents = QtWidgets.QWidget()
+        self.scrollAreaWidgetContents.setGeometry(QtCore.QRect(0, 0, 826, 875))
+        self.scrollAreaWidgetContents.setObjectName("scrollAreaWidgetContents")
+        self.verticalLayout_2 = QtWidgets.QVBoxLayout(self.scrollAreaWidgetContents)
+        self.verticalLayout_2.setContentsMargins(0, 0, 0, 0)
+        self.verticalLayout_2.setObjectName("verticalLayout_2")
         self.info_frame = QtWidgets.QFrame(self.scrollAreaWidgetContents)
         self.info_frame.setMinimumSize(QtCore.QSize(0, 140))
         self.info_frame.setMaximumSize(QtCore.QSize(16777215, 140))
@@ -350,23 +646,11 @@ class Home_Form(object):
         sizePolicy.setHeightForWidth(self.label.sizePolicy().hasHeightForWidth())
         self.label.setSizePolicy(sizePolicy)
         font = QtGui.QFont()
-        font.setPointSize(12)
+        font.setFamily("微软雅黑")
+        font.setPointSize(10)
         self.label.setFont(font)
         self.label.setObjectName("label")
         self.horizontalLayout.addWidget(self.label)
-        self.ComboBox = QtWidgets.QLabel(self.frame_2)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Fixed)
-        sizePolicy.setHorizontalStretch(2)
-        sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.ComboBox.sizePolicy().hasHeightForWidth())
-        self.ComboBox.setSizePolicy(sizePolicy)
-        font = QtGui.QFont()
-        font.setFamily("微软雅黑")
-        font.setBold(False)
-        font.setWeight(50)
-        self.ComboBox.setFont(font)
-        self.ComboBox.setObjectName("ComboBox")
-        self.horizontalLayout.addWidget(self.ComboBox)
         self.gridLayout.addWidget(self.frame_2, 0, 0, 1, 1)
         self.label_3 = QtWidgets.QLabel(self.info_frame)
         font = QtGui.QFont()
@@ -375,7 +659,7 @@ class Home_Form(object):
         self.label_3.setFont(font)
         self.label_3.setObjectName("label_3")
         self.gridLayout.addWidget(self.label_3, 1, 0, 1, 1)
-        self.verticalLayout_4.addWidget(self.info_frame)
+        self.verticalLayout_2.addWidget(self.info_frame)
         self.battery_frame = QtWidgets.QFrame(self.scrollAreaWidgetContents)
         self.battery_frame.setMinimumSize(QtCore.QSize(0, 80))
         self.battery_frame.setMaximumSize(QtCore.QSize(16777215, 80))
@@ -388,32 +672,6 @@ class Home_Form(object):
         self.gridLayout_2.setHorizontalSpacing(5)
         self.gridLayout_2.setVerticalSpacing(0)
         self.gridLayout_2.setObjectName("gridLayout_2")
-        self.label_12 = QtWidgets.QLabel(self.battery_frame)
-        font = QtGui.QFont()
-        font.setFamily("微软雅黑")
-        font.setPointSize(10)
-        self.label_12.setFont(font)
-        self.label_12.setObjectName("label_12")
-        self.gridLayout_2.addWidget(self.label_12, 0, 2, 1, 1)
-        self.label_13 = QtWidgets.QLabel(self.battery_frame)
-        font = QtGui.QFont()
-        font.setFamily("微软雅黑")
-        font.setPointSize(10)
-        self.label_13.setFont(font)
-        self.label_13.setObjectName("label_13")
-        self.gridLayout_2.addWidget(self.label_13, 0, 3, 1, 1)
-        self.label_11 = QtWidgets.QLabel(self.battery_frame)
-        font = QtGui.QFont()
-        font.setFamily("微软雅黑")
-        font.setPointSize(10)
-        self.label_11.setFont(font)
-        self.label_11.setObjectName("label_11")
-        self.gridLayout_2.addWidget(self.label_11, 0, 1, 1, 1)
-        self.ProgressBar = ProgressBar(self.battery_frame)
-        self.ProgressBar.setMaximum(100)
-        self.ProgressBar.setProperty("value", 0)
-        self.ProgressBar.setObjectName("ProgressBar")
-        self.gridLayout_2.addWidget(self.ProgressBar, 3, 0, 1, 4)
         self.label_10 = QtWidgets.QLabel(self.battery_frame)
         font = QtGui.QFont()
         font.setFamily("微软雅黑")
@@ -433,7 +691,33 @@ class Home_Form(object):
         self.label_19.setFont(font)
         self.label_19.setObjectName("label_19")
         self.gridLayout_2.addWidget(self.label_19, 3, 4, 1, 1)
-        self.verticalLayout_4.addWidget(self.battery_frame)
+        self.label_12 = QtWidgets.QLabel(self.battery_frame)
+        font = QtGui.QFont()
+        font.setFamily("微软雅黑")
+        font.setPointSize(10)
+        self.label_12.setFont(font)
+        self.label_12.setObjectName("label_12")
+        self.gridLayout_2.addWidget(self.label_12, 0, 2, 1, 1)
+        self.label_13 = QtWidgets.QLabel(self.battery_frame)
+        font = QtGui.QFont()
+        font.setFamily("微软雅黑")
+        font.setPointSize(10)
+        self.label_13.setFont(font)
+        self.label_13.setObjectName("label_13")
+        self.gridLayout_2.addWidget(self.label_13, 0, 3, 1, 1)
+        self.ProgressBar = ProgressBar(self.battery_frame)
+        self.ProgressBar.setMaximum(100)
+        self.ProgressBar.setProperty("value", 0)
+        self.ProgressBar.setObjectName("ProgressBar")
+        self.gridLayout_2.addWidget(self.ProgressBar, 3, 0, 1, 4)
+        self.label_11 = QtWidgets.QLabel(self.battery_frame)
+        font = QtGui.QFont()
+        font.setFamily("微软雅黑")
+        font.setPointSize(10)
+        self.label_11.setFont(font)
+        self.label_11.setObjectName("label_11")
+        self.gridLayout_2.addWidget(self.label_11, 0, 1, 1, 1)
+        self.verticalLayout_2.addWidget(self.battery_frame)
         self.screen_frame = QtWidgets.QFrame(self.scrollAreaWidgetContents)
         self.screen_frame.setMinimumSize(QtCore.QSize(0, 40))
         self.screen_frame.setMaximumSize(QtCore.QSize(16777215, 40))
@@ -474,7 +758,7 @@ class Home_Form(object):
         self.label_20.setFont(font)
         self.label_20.setObjectName("label_20")
         self.gridLayout_5.addWidget(self.label_20, 0, 3, 1, 1)
-        self.verticalLayout_4.addWidget(self.screen_frame)
+        self.verticalLayout_2.addWidget(self.screen_frame)
         self.sdcard_frame = QtWidgets.QFrame(self.scrollAreaWidgetContents)
         self.sdcard_frame.setMinimumSize(QtCore.QSize(0, 80))
         self.sdcard_frame.setMaximumSize(QtCore.QSize(16777215, 80))
@@ -495,6 +779,7 @@ class Home_Form(object):
         self.label_15.setObjectName("label_15")
         self.gridLayout_3.addWidget(self.label_15, 0, 0, 1, 1)
         self.ProgressBar_2 = ProgressBar(self.sdcard_frame)
+        self.ProgressBar_2.setMinimum(0)
         self.ProgressBar_2.setMaximum(100)
         self.ProgressBar_2.setProperty("value", 0)
         self.ProgressBar_2.setObjectName("ProgressBar_2")
@@ -511,7 +796,7 @@ class Home_Form(object):
         self.label_16.setFont(font)
         self.label_16.setObjectName("label_16")
         self.gridLayout_3.addWidget(self.label_16, 3, 2, 1, 1)
-        self.verticalLayout_4.addWidget(self.sdcard_frame)
+        self.verticalLayout_2.addWidget(self.sdcard_frame)
         self.root_frame = QtWidgets.QFrame(self.scrollAreaWidgetContents)
         self.root_frame.setMinimumSize(QtCore.QSize(0, 80))
         self.root_frame.setMaximumSize(QtCore.QSize(16777215, 80))
@@ -548,14 +833,12 @@ class Home_Form(object):
         self.label_18.setFont(font)
         self.label_18.setObjectName("label_18")
         self.gridLayout_4.addWidget(self.label_18, 3, 2, 1, 1)
-        self.verticalLayout_4.addWidget(self.root_frame)
+        self.verticalLayout_2.addWidget(self.root_frame)
         self.func_frame = QtWidgets.QFrame(self.scrollAreaWidgetContents)
         self.func_frame.setFrameShape(QtWidgets.QFrame.StyledPanel)
         self.func_frame.setFrameShadow(QtWidgets.QFrame.Raised)
         self.func_frame.setObjectName("func_frame")
         self.verticalLayout = QtWidgets.QVBoxLayout(self.func_frame)
-        self.verticalLayout.setContentsMargins(0, 0, 0, 0)
-        self.verticalLayout.setSpacing(0)
         self.verticalLayout.setObjectName("verticalLayout")
         self.func_app = QtWidgets.QFrame(self.func_frame)
         self.func_app.setMinimumSize(QtCore.QSize(0, 150))
@@ -567,13 +850,33 @@ class Home_Form(object):
         self.gridLayout_6.setContentsMargins(0, 0, 0, 0)
         self.gridLayout_6.setHorizontalSpacing(40)
         self.gridLayout_6.setObjectName("gridLayout_6")
+        self.PushButton = PushButton(self.func_app)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Fixed)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.PushButton.sizePolicy().hasHeightForWidth())
+        self.PushButton.setSizePolicy(sizePolicy)
+        font = QtGui.QFont()
+        font.setFamily("微软雅黑")
+        font.setBold(False)
+        font.setWeight(50)
+        self.PushButton.setFont(font)
+        self.PushButton.setObjectName("PushButton")
+        self.gridLayout_6.addWidget(self.PushButton, 1, 0, 1, 1)
+        self.PushButton_2 = PushButton(self.func_app)
+        font = QtGui.QFont()
+        font.setFamily("微软雅黑")
+        font.setBold(False)
+        font.setWeight(50)
+        self.PushButton_2.setFont(font)
+        self.PushButton_2.setObjectName("PushButton_2")
+        self.gridLayout_6.addWidget(self.PushButton_2, 1, 1, 1, 1)
         self.PushButton_3 = PushButton(self.func_app)
         font = QtGui.QFont()
         font.setFamily("微软雅黑")
         font.setBold(False)
         font.setWeight(50)
         self.PushButton_3.setFont(font)
-        self.PushButton_3.setIcon(FIF.MARKET)
         self.PushButton_3.setObjectName("PushButton_3")
         self.gridLayout_6.addWidget(self.PushButton_3, 4, 0, 1, 1)
         self.PushButton_4 = PushButton(self.func_app)
@@ -583,7 +886,7 @@ class Home_Form(object):
         font.setWeight(50)
         self.PushButton_4.setFont(font)
         icon = QtGui.QIcon()
-        icon.addPixmap(QtGui.QPixmap("img/keyboard.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        icon.addPixmap(QtGui.QPixmap("./img/keyboard.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.PushButton_4.setIcon(icon)
         self.PushButton_4.setObjectName("PushButton_4")
         self.gridLayout_6.addWidget(self.PushButton_4, 4, 1, 1, 1)
@@ -601,29 +904,6 @@ class Home_Form(object):
         self.title_app.setFont(font)
         self.title_app.setObjectName("title_app")
         self.gridLayout_6.addWidget(self.title_app, 0, 0, 1, 2)
-        self.PushButton = PushButton(self.func_app)
-        self.PushButton.setIcon(FIF.DOWNLOAD)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Fixed)
-        sizePolicy.setHorizontalStretch(0)
-        sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.PushButton.sizePolicy().hasHeightForWidth())
-        self.PushButton.setSizePolicy(sizePolicy)
-        font = QtGui.QFont()
-        font.setFamily("微软雅黑")
-        font.setBold(False)
-        font.setWeight(50)
-        self.PushButton.setFont(font)
-        self.PushButton.setObjectName("PushButton")
-        self.gridLayout_6.addWidget(self.PushButton, 1, 0, 1, 1)
-        self.PushButton_2 = PushButton(self.func_app)
-        self.PushButton_2.setIcon(FIF.APPLICATION)
-        font = QtGui.QFont()
-        font.setFamily("微软雅黑")
-        font.setBold(False)
-        font.setWeight(50)
-        self.PushButton_2.setFont(font)
-        self.PushButton_2.setObjectName("PushButton_2")
-        self.gridLayout_6.addWidget(self.PushButton_2, 1, 1, 1, 1)
         self.verticalLayout.addWidget(self.func_app)
         self.func_xtc = QtWidgets.QFrame(self.func_frame)
         self.func_xtc.setMinimumSize(QtCore.QSize(0, 150))
@@ -641,7 +921,6 @@ class Home_Form(object):
         self.gridLayout_7.setVerticalSpacing(14)
         self.gridLayout_7.setObjectName("gridLayout_7")
         self.PushButton_5 = PushButton(self.func_xtc)
-        self.PushButton_5.setIcon(FIF.FIT_PAGE)
         font = QtGui.QFont()
         font.setFamily("微软雅黑")
         font.setBold(False)
@@ -670,7 +949,7 @@ class Home_Form(object):
         font.setWeight(50)
         self.PushButton_6.setFont(font)
         icon1 = QtGui.QIcon()
-        icon1.addPixmap(QtGui.QPixmap("img/battery.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        icon1.addPixmap(QtGui.QPixmap("./img/battery.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.PushButton_6.setIcon(icon1)
         self.PushButton_6.setObjectName("PushButton_6")
         self.gridLayout_7.addWidget(self.PushButton_6, 1, 1, 1, 1)
@@ -680,7 +959,6 @@ class Home_Form(object):
         font.setBold(False)
         font.setWeight(50)
         self.PushButton_7.setFont(font)
-        self.PushButton_7.setIcon(FIF.FOLDER)
         self.PushButton_7.setObjectName("PushButton_7")
         self.gridLayout_7.addWidget(self.PushButton_7, 2, 0, 1, 1)
         self.PushButton_8 = PushButton(self.func_xtc)
@@ -689,14 +967,50 @@ class Home_Form(object):
         font.setBold(False)
         font.setWeight(50)
         self.PushButton_8.setFont(font)
-        self.PushButton_8.setIcon(FIF.COMMAND_PROMPT)
         self.PushButton_8.setObjectName("PushButton_8")
         self.gridLayout_7.addWidget(self.PushButton_8, 2, 1, 1, 1)
         self.verticalLayout_3.addLayout(self.gridLayout_7)
         self.verticalLayout.addWidget(self.func_xtc)
-        self.verticalLayout_4.addWidget(self.func_frame)
+        self.gridLayout_8 = QtWidgets.QGridLayout()
+        self.gridLayout_8.setContentsMargins(-1, -1, -1, 0)
+        self.gridLayout_8.setHorizontalSpacing(40)
+        self.gridLayout_8.setVerticalSpacing(14)
+        self.gridLayout_8.setObjectName("gridLayout_8")
+        self.title_xtc_2 = QtWidgets.QLabel(self.func_frame)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Fixed)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.title_xtc_2.sizePolicy().hasHeightForWidth())
+        self.title_xtc_2.setSizePolicy(sizePolicy)
+        self.title_xtc_2.setMinimumSize(QtCore.QSize(0, 30))
+        self.title_xtc_2.setMaximumSize(QtCore.QSize(16777215, 30))
+        font = QtGui.QFont()
+        font.setFamily("微软雅黑")
+        font.setPointSize(12)
+        self.title_xtc_2.setFont(font)
+        self.title_xtc_2.setObjectName("title_xtc_2")
+        self.gridLayout_8.addWidget(self.title_xtc_2, 0, 0, 1, 2)
+        self.atuoStartButton = PushButton(self.func_frame)
+        font = QtGui.QFont()
+        font.setFamily("微软雅黑")
+        font.setBold(False)
+        font.setWeight(50)
+        self.atuoStartButton.setFont(font)
+        self.atuoStartButton.setObjectName("atuoStartButton")
+        self.gridLayout_8.addWidget(self.atuoStartButton, 1, 0, 1, 1)
+        self.magiskToolButton = PushButton(self.func_frame)
+        font = QtGui.QFont()
+        font.setFamily("微软雅黑")
+        font.setBold(False)
+        font.setWeight(50)
+        self.magiskToolButton.setFont(font)
+        self.magiskToolButton.setIcon(icon1)
+        self.magiskToolButton.setObjectName("magiskToolButton")
+        self.gridLayout_8.addWidget(self.magiskToolButton, 1, 1, 1, 1)
+        self.verticalLayout.addLayout(self.gridLayout_8)
+        self.verticalLayout_2.addWidget(self.func_frame)
         self.ScrollArea.setWidget(self.scrollAreaWidgetContents)
-        self.verticalLayout_2.addWidget(self.ScrollArea)
+        self.verticalLayout_4.addWidget(self.ScrollArea)
 
         self.retranslateUi(Form)
         QtCore.QMetaObject.connectSlotsByName(Form)
@@ -759,6 +1073,16 @@ class Home_Form(object):
         self.label_16.setText(_translate("Form", "-%"))
         self.label_17.setText(_translate("Form", "根目录: --/--"))
         self.label_18.setText(_translate("Form", "-%"))
+        self.title_xtc_2.setText(_translate("Form", "高级操作(需要root权限)-共2种功能"))
+        self.atuoStartButton.setText(_translate("Form", "自启动管理"))
+        self.magiskToolButton.setText(_translate("Form", "magisk工具"))
+        self.PushButton.setIcon(FIF.DOWNLOAD)
+        self.PushButton_2.setIcon(FIF.APPLICATION)
+        self.PushButton_3.setIcon(FIF.MARKET)
+        self.PushButton_5.setIcon(FIF.FIT_PAGE)
+        self.PushButton_7.setIcon(FIF.FOLDER)
+        self.PushButton_8.setIcon(FIF.COMMAND_PROMPT)
+        self.atuoStartButton.setIcon(FIF.DEVELOPER_TOOLS)
         self.ProgressBar.setValue(0)
         self.ProgressBar_2.setValue(0)
         self.ProgressBar_3.setValue(0)
@@ -814,6 +1138,7 @@ class SettingInterface(ScrollArea):
     acrylicEnableChanged = pyqtSignal(bool)
     checkUpdateSig = pyqtSignal()
     minimizeToTrayChanged = pyqtSignal(bool)
+    showSignal = pyqtSignal(str,str,str)
 
     def __init__(self, parent=None):
         super().__init__(parent=parent)
@@ -825,7 +1150,7 @@ class SettingInterface(ScrollArea):
         self.enableAcrylicCard = SwitchSettingCard(
             FIF.TRANSPARENT,
             self.tr("使用亚克力效果"),
-            self.tr("亚克力效果有更好的视觉体验，但可能会导致窗户卡住"),
+            self.tr("亚克力效果有更好的视觉体验，但可能会导致窗口卡住"),
             configItem=cfg.enableAcrylicBackground,
             parent=self.personalGroup
         )
@@ -833,13 +1158,14 @@ class SettingInterface(ScrollArea):
             cfg.themeMode,
             FIF.BRUSH,
             self.tr('应用主题'),
-            self.tr("更改应用程序的外观"),
+            self.tr("更改应用程序的外观(已被禁用,浅色外观写的像史,等待优化...)"),
             texts=[
                 self.tr('浅色'), self.tr('深色'),
                 self.tr('使用系统默认外观')
             ],
             parent=self.personalGroup
         )
+        self.themeCard.setEnabled(False)
         self.themeColorCard=CustomColorSettingCard(
             cfg.themeColor,
             FIF.PALETTE,
@@ -858,6 +1184,13 @@ class SettingInterface(ScrollArea):
             ],
             parent=self.personalGroup
         )
+        self.tempCleaner = PrimaryPushSettingCard(
+            self.tr('清理缓存'),
+            FIF.DELETE,
+            self.tr('清理缓存'),
+            self.tr('清理运行时获取信息留下的APK,文件管理中快速预览的缓存文件'),
+            self.personalGroup
+        )
 
         # main panel
         self.mainPanelGroup = SettingCardGroup(self.tr('主面板'), self.scrollWidget)
@@ -868,6 +1201,8 @@ class SettingInterface(ScrollArea):
             configItem=cfg.minimizeToTray,
             parent=self.mainPanelGroup
         )
+        self.minimizeToTrayCard.switchButton.setChecked(False)
+        self.minimizeToTrayCard.switchButton.setEnabled(False)
 
         # update software
         self.updateSoftwareGroup = SettingCardGroup(self.tr("软件更新"), self.scrollWidget)
@@ -926,6 +1261,7 @@ class SettingInterface(ScrollArea):
         self.personalGroup.addSettingCard(self.themeCard)
         self.personalGroup.addSettingCard(self.themeColorCard)
         self.personalGroup.addSettingCard(self.zoomCard)
+        self.personalGroup.addSettingCard(self.tempCleaner)
 
         self.updateSoftwareGroup.addSettingCard(self.updateOnStartUpCard)
 
@@ -959,6 +1295,20 @@ class SettingInterface(ScrollArea):
             parent=self.window()
         )
 
+    def __showSignal(self,title,text,stat = 'success'):
+        if stat == 'success':
+            InfoBar.success(
+                title,
+                text,
+                parent=self.window()
+            )
+        else:
+            InfoBar.error(
+                title,
+                text,
+                parent=self.window()
+            )
+
     def onThemeChanged(self, theme: Theme):
         """ theme changed slot """
         # change the theme of qfluentwidgets
@@ -969,6 +1319,7 @@ class SettingInterface(ScrollArea):
 
     def __connectSignalToSlot(self):
         """ connect signal to slot """
+        self.showSignal.connect(self.__showSignal)
         cfg.appRestartSig.connect(self.__showRestartTooltip)
         cfg.themeChanged.connect(self.onThemeChanged)
 
@@ -977,6 +1328,7 @@ class SettingInterface(ScrollArea):
         self.enableAcrylicCard.checkedChanged.connect(
             self.acrylicEnableChanged)
         self.themeColorCard.colorChanged.connect(setThemeColor)
+        self.tempCleaner.clicked.connect(self.cleanAllTemp)
 
         # main panel
         self.minimizeToTrayCard.checkedChanged.connect(
@@ -989,21 +1341,26 @@ class SettingInterface(ScrollArea):
 
     def check_update(self):
         try:
-            res = get("https://wwtw.lanzouq.com/b04ewllad/")
-            ver = findall(r'<div class="d" id="info">.*?<div id="filename">小天才专用工具箱</div>.*?<div id="infos">.*?<div id="ready" style="background:#ccc; ">.*?<div id="name".*?<a href="https://lanqinyun.com/.*?>Setup_(?P<ver>.*?).exe</a> </div>',res.text,S)
+            res = get('https://github.com/MXG114514/XTC_box/blob/main/README.md')
+            json = findall(r'  <script type="application/json" data-target="react-app.embeddedData">(?P<text>.*?)</script>',res.text)
+            info = eval(json[0].replace('false', 'False').replace('true', 'True').replace('null', 'None'))
+            md = info['payload']['blob']['richText']
+            res = findall(r'<h. tabindex="-." class="heading-element" dir="auto">V(?P<ver>.*?):</h.>.*?</path></svg></a></div>\n<p dir="auto">(?P<info>.*?)</p>', md)
             k = 0
-            for i in ver:
-                v = str(i).replace("_", ".")
+            info = ''
+            for i in res:
+                v = i[0]
                 if float(v) > k:
                     k = float(v)
+                    info = i[1]
             if k > float(VERSION):
                 m = MessageBox(title="有新版本!",
-                               content="检测到新版本:小天才专用工具箱V{},快去更新体验最新功能吧!".format(str(k)),
+                               content="检测到新版本:小天才专用工具箱V{},快去更新体验最新功能吧!\n更新日志: {}".format(str(k),info),
                                parent=self.parent().parent())
                 m.yesButton.setText("立即更新")
                 m.cancelButton.setText("暂不更新")
                 if m.exec():
-                    QDesktopServices.openUrl(QUrl("https://lanqinyun.com/s/MbmumeKkui"))
+                    QDesktopServices.openUrl(QUrl("https://pan.baidu.com/s/1Z6eBJdzYJTiFgSF-7XH76A?pwd=ABCD"))
             else:
                 m = MessageBox(title="已是最新版本了",
                                content="当前小天才专用工具箱V{}是最新版本".format(VERSION),
@@ -1012,7 +1369,22 @@ class SettingInterface(ScrollArea):
                 m.cancelButton.setText("取消")
                 m.exec()
         except Exception as e:
-            print(e)
+            print(e,e.__traceback__.tb_lineno)
+    def cleanAllTemp(self):
+        def start():
+            try:
+                size = 0
+                del_list = listdir('./temp/')
+                for f in del_list:
+                    file_path = path.join('./temp/', f)
+                    if path.isfile(file_path):
+                        size+=path.getsize(file_path)
+                        remove(file_path)
+                self.showSignal.emit('清理成功!',f'共清理{round(size/1024**2,1)}MB缓存','success')
+            except:
+                self.showSignal.emit('未知错误','','error')
+        t=Thread(target=start)
+        t.start()
 class Apk_Install_Window(object):
     def __init__(self):
         self.apk_path_dict=dict()
@@ -1428,6 +1800,9 @@ class Input_list(object):
         self.horizontalLayout_5.setObjectName("horizontalLayout_5")
         self.horizontalLayout_2.addWidget(self.app_frame)
         self.verticalLayout_3.addLayout(self.horizontalLayout_2)
+        self.flush = PushButton(ps_list)
+        self.verticalLayout_3.addWidget(self.flush)
+        self.flush.setText('刷新')
         self.PushButton = PushButton(ps_list)
         self.PushButton.setObjectName("PushButton")
         self.verticalLayout_3.addWidget(self.PushButton)
@@ -1472,3 +1847,806 @@ class Input_list(object):
         self.completer.setMaxVisibleItems(10)
         self.completer.setFilterMode(QtCore.Qt.MatchContains)
         self.search_edit.setCompleter(self.completer)
+class File_list_main(object):
+    path = []
+    copy = []
+    cut = []
+    link = dict
+    init_link_func = lambda :()
+    def setupUi(self, file_list_main):
+        file_list_main.setObjectName("file_list_main")
+        file_list_main.resize(775, 637)
+        self.verticalLayout_10 = QtWidgets.QVBoxLayout(file_list_main)
+        self.verticalLayout_10.setObjectName("verticalLayout_10")
+        self.horizontalLayout_10 = QtWidgets.QHBoxLayout()
+        self.horizontalLayout_10.setObjectName("horizontalLayout_10")
+        self.back_btn = TransparentToolButton()
+        self.back_btn.setIcon(FIF.RETURN)
+        self.flush_btn = TransparentToolButton()
+        self.flush_btn.setIcon(FIF.SYNC)
+        self.horizontalLayout_10.addWidget(self.back_btn)
+        self.horizontalLayout_10.addWidget(self.flush_btn)
+        self.path_frame = QtWidgets.QFrame(file_list_main)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Preferred)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.path_frame.sizePolicy().hasHeightForWidth())
+        self.path_frame.setSizePolicy(sizePolicy)
+        self.path_frame.setFrameShape(QtWidgets.QFrame.StyledPanel)
+        self.path_frame.setFrameShadow(QtWidgets.QFrame.Raised)
+        self.path_frame.setObjectName("path_frame")
+        self.horizontalLayout = QtWidgets.QHBoxLayout(self.path_frame)
+        self.horizontalLayout.setContentsMargins(0, 0, 0, 0)
+        self.horizontalLayout.setSpacing(0)
+        self.horizontalLayout.setObjectName("horizontalLayout")
+        self.path_widget = LineEdit(self.path_frame)
+        self.path_widget.setObjectName("path_widget")
+        self.horizontalLayout.addWidget(self.path_widget)
+        self.PrimaryPushButton = PrimaryPushButton(self.path_frame)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.PrimaryPushButton.sizePolicy().hasHeightForWidth())
+        self.PrimaryPushButton.setSizePolicy(sizePolicy)
+        self.PrimaryPushButton.setObjectName("PrimaryPushButton")
+        self.horizontalLayout.addWidget(self.PrimaryPushButton)
+        self.horizontalLayout_10.addWidget(self.path_frame)
+        self.search_file = SearchLineEdit(file_list_main)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Fixed)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.search_file.sizePolicy().hasHeightForWidth())
+        self.search_file.setSizePolicy(sizePolicy)
+        self.search_file.setObjectName("search_file")
+        self.horizontalLayout_10.addWidget(self.search_file)
+        self.verticalLayout_10.addLayout(self.horizontalLayout_10)
+        self.file_list = File_list_widget(file_list_main)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Expanding)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.file_list.sizePolicy().hasHeightForWidth())
+        self.file_list.setSizePolicy(sizePolicy)
+        self.file_list.setObjectName("file_list")
+        self.verticalLayout_10.addWidget(self.file_list)
+        self.widget = QtWidgets.QWidget(file_list_main)
+        self.widget.setMinimumSize(QtCore.QSize(0, 200))
+        self.widget.setMaximumSize(QtCore.QSize(16777215, 200))
+        self.widget.setObjectName("widget")
+        self.horizontalLayout_9 = QtWidgets.QHBoxLayout(self.widget)
+        self.horizontalLayout_9.setContentsMargins(0, 0, 0, 0)
+        self.horizontalLayout_9.setObjectName("horizontalLayout_9")
+        self.link_list = QtWidgets.QGroupBox(self.widget)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Minimum)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.link_list.sizePolicy().hasHeightForWidth())
+        self.link_list.setSizePolicy(sizePolicy)
+        self.link_list.setMaximumSize(QtCore.QSize(16777215, 200))
+        self.link_list.setObjectName("link_list")
+        self.verticalLayout_2 = QtWidgets.QVBoxLayout(self.link_list)
+        self.verticalLayout_2.setContentsMargins(0, 0, 0, 0)
+        self.verticalLayout_2.setSpacing(0)
+        self.verticalLayout_2.setObjectName("verticalLayout_2")
+        self.f = ScrollArea(self.link_list)
+        self.f.setWidgetResizable(True)
+        self.f.setObjectName("f")
+        self.vboxlayout2=QtWidgets.QVBoxLayout(self.f)
+        self.scrollAreaWidgetContents = QtWidgets.QFrame(self.f)
+        self.scrollAreaWidgetContents.setGeometry(QtCore.QRect(0, 0, 181, 184))
+        self.scrollAreaWidgetContents.setObjectName("scrollAreaWidgetContents")
+        self.vboxlayout2.addWidget(self.scrollAreaWidgetContents)
+        self.vboxlayout = VBoxLayout(self.scrollAreaWidgetContents)
+        self.f.setWidget(self.scrollAreaWidgetContents)
+        self.verticalLayout_2.addWidget(self.f)
+        self.horizontalLayout_9.addWidget(self.link_list)
+        self.func_list = QtWidgets.QGroupBox(self.widget)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Minimum)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.func_list.sizePolicy().hasHeightForWidth())
+        self.func_list.setSizePolicy(sizePolicy)
+        self.func_list.setMaximumSize(QtCore.QSize(16777215, 200))
+        self.func_list.setObjectName("func_list")
+        self.verticalLayout = QtWidgets.QVBoxLayout(self.func_list)
+        self.verticalLayout.setContentsMargins(0, 0, 0, 0)
+        self.verticalLayout.setSpacing(0)
+        self.verticalLayout.setObjectName("verticalLayout")
+        self.ScrollArea = ScrollArea(self.func_list)
+        self.ScrollArea.setMinimumSize(QtCore.QSize(0, 0))
+        self.ScrollArea.setMaximumSize(QtCore.QSize(16777215, 16777215))
+        self.ScrollArea.setWidgetResizable(True)
+        self.ScrollArea.setObjectName("ScrollArea")
+        self.scrollAreaWidgetContents_2 = QtWidgets.QFrame()
+        self.scrollAreaWidgetContents_2.setGeometry(QtCore.QRect(0, 0, 181, 184))
+        self.scrollAreaWidgetContents_2.setObjectName("scrollAreaWidgetContents_2")
+        self.verticalLayout_3 = QtWidgets.QVBoxLayout(self.scrollAreaWidgetContents_2)
+        self.verticalLayout_3.setContentsMargins(0, 0, 0, 0)
+        self.verticalLayout_3.setObjectName("verticalLayout_3")
+        self.horizontalLayout_2 = QtWidgets.QHBoxLayout()
+        self.horizontalLayout_2.setObjectName("horizontalLayout_2")
+        self.push_btn = PushButton(self.scrollAreaWidgetContents_2)
+        self.push_btn.setObjectName("push_btn")
+        self.horizontalLayout_2.addWidget(self.push_btn)
+        self.pull_btn = PushButton(self.scrollAreaWidgetContents_2)
+        self.pull_btn.setObjectName("pull_btn")
+        self.horizontalLayout_2.addWidget(self.pull_btn)
+        self.verticalLayout_3.addLayout(self.horizontalLayout_2)
+        self.horizontalLayout_3 = QtWidgets.QHBoxLayout()
+        self.horizontalLayout_3.setObjectName("horizontalLayout_3")
+        self.copy_btn = PushButton(self.scrollAreaWidgetContents_2)
+        self.copy_btn.setObjectName("copy_btn")
+        self.horizontalLayout_3.addWidget(self.copy_btn)
+        self.cut_btn = PushButton(self.scrollAreaWidgetContents_2)
+        self.cut_btn.setObjectName("cut_btn")
+        self.horizontalLayout_3.addWidget(self.cut_btn)
+        self.verticalLayout_3.addLayout(self.horizontalLayout_3)
+        self.horizontalLayout_4 = QtWidgets.QHBoxLayout()
+        self.horizontalLayout_4.setObjectName("horizontalLayout_4")
+        self.paste_btn = PushButton(self.scrollAreaWidgetContents_2)
+        self.paste_btn.setObjectName("paste_btn")
+        self.horizontalLayout_4.addWidget(self.paste_btn)
+        self.del_btn = PushButton(self.scrollAreaWidgetContents_2)
+        self.del_btn.setObjectName("del_btn")
+        self.horizontalLayout_4.addWidget(self.del_btn)
+        self.verticalLayout_3.addLayout(self.horizontalLayout_4)
+        self.horizontalLayout_5 = QtWidgets.QHBoxLayout()
+        self.horizontalLayout_5.setObjectName("horizontalLayout_5")
+        self.set_name_btn = PushButton(self.scrollAreaWidgetContents_2)
+        self.set_name_btn.setObjectName("set_name_btn")
+        self.horizontalLayout_5.addWidget(self.set_name_btn)
+        self.new_btn = PushButton(self.scrollAreaWidgetContents_2)
+        self.new_btn.setObjectName("new_btn")
+        self.horizontalLayout_5.addWidget(self.new_btn)
+        self.verticalLayout_3.addLayout(self.horizontalLayout_5)
+        self.ScrollArea.setWidget(self.scrollAreaWidgetContents_2)
+        self.verticalLayout.addWidget(self.ScrollArea)
+        self.horizontalLayout_9.addWidget(self.func_list)
+        self.selected_list = QtWidgets.QFrame(self.widget)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Minimum)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.selected_list.sizePolicy().hasHeightForWidth())
+        self.selected_list.setSizePolicy(sizePolicy)
+        self.selected_list.setMaximumSize(QtCore.QSize(16777215, 200))
+        self.selected_list.setObjectName("selected_list")
+        self.verticalLayout_5 = QtWidgets.QVBoxLayout(self.selected_list)
+        self.verticalLayout_5.setContentsMargins(0, 0, 0, 0)
+        self.verticalLayout_5.setSpacing(0)
+        self.verticalLayout_5.setObjectName("verticalLayout_5")
+        self.ScrollArea_2 = ScrollArea(self.selected_list)
+        self.ScrollArea_2.setWidgetResizable(True)
+        self.ScrollArea_2.setObjectName("ScrollArea_2")
+        self.scrollAreaWidgetContents_3 = QtWidgets.QFrame()
+        self.scrollAreaWidgetContents_3.setGeometry(QtCore.QRect(0, 0, 180, 184))
+        self.scrollAreaWidgetContents_3.setObjectName("scrollAreaWidgetContents_3")
+        self.verticalLayout_6 = QtWidgets.QVBoxLayout(self.scrollAreaWidgetContents_3)
+        self.verticalLayout_6.setContentsMargins(0, 0, 0, 0)
+        self.verticalLayout_6.setObjectName("verticalLayout_6")
+        self.horizontalLayout_6 = QtWidgets.QHBoxLayout()
+        self.horizontalLayout_6.setObjectName("horizontalLayout_6")
+        self.CheckBox_2 = CheckBox(self.scrollAreaWidgetContents_3)
+        self.CheckBox_2.setObjectName("CheckBox_2")
+        self.horizontalLayout_6.addWidget(self.CheckBox_2)
+        self.CheckBox = CheckBox(self.scrollAreaWidgetContents_3)
+        font = QtGui.QFont()
+        font.setFamily("Segoe UI")
+        font.setPointSize(-1)
+        font.setBold(False)
+        font.setItalic(False)
+        font.setWeight(50)
+        self.CheckBox.setFont(font)
+        self.CheckBox.setObjectName("CheckBox")
+        self.horizontalLayout_6.addWidget(self.CheckBox)
+        self.verticalLayout_6.addLayout(self.horizontalLayout_6)
+        self.horizontalLayout_7 = QtWidgets.QHBoxLayout()
+        self.horizontalLayout_7.setObjectName("horizontalLayout_7")
+        self.selected_all_btn = PushButton(self.scrollAreaWidgetContents_3)
+        self.selected_all_btn.setObjectName("selected_all_btn")
+        self.horizontalLayout_7.addWidget(self.selected_all_btn)
+        self.selected_reverse_btn = PushButton(self.scrollAreaWidgetContents_3)
+        self.selected_reverse_btn.setObjectName("selected_reverse_btn")
+        self.horizontalLayout_7.addWidget(self.selected_reverse_btn)
+        self.verticalLayout_6.addLayout(self.horizontalLayout_7)
+        self.verticalLayout_4 = QtWidgets.QVBoxLayout()
+        self.verticalLayout_4.setObjectName("verticalLayout_4")
+        self.selected_doc = PushButton(self.scrollAreaWidgetContents_3)
+        self.selected_doc.setObjectName("selected_doc")
+        self.verticalLayout_4.addWidget(self.selected_doc)
+        self.selected_file = PushButton(self.scrollAreaWidgetContents_3)
+        self.selected_file.setObjectName("selected_file")
+        self.verticalLayout_4.addWidget(self.selected_file)
+        self.selected_cancel_btn = PushButton(self.scrollAreaWidgetContents_3)
+        self.selected_cancel_btn.setObjectName("selected_cancel_btn")
+        self.verticalLayout_4.addWidget(self.selected_cancel_btn)
+        self.verticalLayout_6.addLayout(self.verticalLayout_4)
+        self.ScrollArea_2.setWidget(self.scrollAreaWidgetContents_3)
+        self.verticalLayout_5.addWidget(self.ScrollArea_2)
+        self.horizontalLayout_9.addWidget(self.selected_list)
+        self.file_info_list = QtWidgets.QGroupBox(self.widget)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.file_info_list.sizePolicy().hasHeightForWidth())
+        self.file_info_list.setSizePolicy(sizePolicy)
+        self.file_info_list.setMaximumSize(QtCore.QSize(16777215, 200))
+        self.file_info_list.setObjectName("file_info_list")
+        self.verticalLayout_8 = QtWidgets.QVBoxLayout(self.file_info_list)
+        self.verticalLayout_8.setContentsMargins(0, 0, 0, 0)
+        self.verticalLayout_8.setSpacing(0)
+        self.verticalLayout_8.setObjectName("verticalLayout_8")
+        self.file_info_frame = Ui_file_info_frame()
+        self.file_info_frame.setupUi(self.file_info_list)
+        self.verticalLayout_8.addWidget(self.file_info_frame.ScrollArea)
+        self.horizontalLayout_9.addWidget(self.file_info_list)
+        self.verticalLayout_10.addWidget(self.widget)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Minimum)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        self.file_info_frame.textBrowser.setSizePolicy(sizePolicy)
+        self.retranslateUi(file_list_main)
+        QtCore.QMetaObject.connectSlotsByName(file_list_main)
+
+    def retranslateUi(self, file_list_main):
+        _translate = QtCore.QCoreApplication.translate
+        file_list_main.setWindowTitle(_translate("file_list_main", "Frame"))
+        self.PrimaryPushButton.setText(_translate("file_list_main", "转跳"))
+        self.push_btn.setText(_translate("file_list_main", "导入"))
+        self.pull_btn.setText(_translate("file_list_main", "导出"))
+        self.copy_btn.setText(_translate("file_list_main", "复制"))
+        self.cut_btn.setText(_translate("file_list_main", "剪切"))
+        self.paste_btn.setText(_translate("file_list_main", "粘贴"))
+        self.del_btn.setText(_translate("file_list_main", "删除"))
+        self.set_name_btn.setText(_translate("file_list_main", "重命名"))
+        self.new_btn.setText(_translate("file_list_main", "新建"))
+        self.CheckBox_2.setText(_translate("file_list_main", "开启多选"))
+        self.CheckBox.setText(_translate("file_list_main", "双击预览"))
+        self.selected_all_btn.setText(_translate("file_list_main", "全选"))
+        self.selected_reverse_btn.setText(_translate("file_list_main", "反选"))
+        self.selected_doc.setText(_translate("file_list_main", "选中文件夹"))
+        self.selected_file.setText(_translate("file_list_main", "选中文件"))
+        self.selected_cancel_btn.setText(_translate("file_list_main", "取消选中"))
+        self.path_widget.setPlaceholderText('文件路径分隔符请使用\"/\"规范输入')
+        self.CheckBox_2.clicked.connect(lambda :(exec('global MultipleChoices;MultipleChoices = not MultipleChoices')))
+        self.CheckBox.setChecked(True)
+    def setPath(self,path:tuple):
+        if path[0] == '+':
+            self.path.append(path[1])
+        elif path[0] == '-':
+            self.path=self.path[:-1]
+        elif path[0] == 'list':
+            self.path=path
+        elif path[0] == '':
+            if path[1][-1] in ['/']:
+                self.path=path[1].split(path[1][0])[1:-1]
+            else:
+                self.path=path[1].split(path[1][0])[1:]
+        text = '/'+'/'.join(self.path)+'/' if self.path!=[] else '/'
+        self.path_widget.setText(text)
+        return text
+    def getPath(self):
+        if self.path == ['']:
+            return '/'
+        else:
+            return '/'+'/'.join(self.path)+'/'
+    def init_file_link(self):
+        def set_menu():
+            sender = self.scrollAreaWidgetContents.sender()
+            menu = RoundMenu(self.scrollAreaWidgetContents)
+            action = Action(text="删除",parent=menu,triggered=lambda :self.delete_link(sender))
+            menu.addAction(action)
+            menu.popup(QtGui.QCursor.pos())
+        f = open('./config/link.json', encoding='utf-8')
+        data = eval(f.read())
+        f.close()
+        item_list = list(range(self.vboxlayout.count()))
+        item_list.reverse()
+        for i in item_list:
+            item = self.vboxlayout.itemAt(i)
+            self.vboxlayout.removeItem(item)
+            if item.widget():
+                item.widget().deleteLater()
+        self.link = data
+        for i in data.keys():
+            button = PushButton(self.scrollAreaWidgetContents)
+            button.setText(i)
+            button.resize(150,30)
+            button.clicked.connect(self.init_link_func)
+            button.setObjectName(i)
+            button.setContextMenuPolicy(Qt.CustomContextMenu)
+            button.customContextMenuRequested.connect(set_menu)
+            self.vboxlayout.addWidget(button)
+        self.link_setting_btn = PrimaryPushButton(self.scrollAreaWidgetContents)
+        self.link_setting_btn.setGeometry(QtCore.QRect(10, 130, 153, 32))
+        self.vboxlayout.addWidget(self.link_setting_btn)
+        self.link_setting_btn.setText('添加')
+        self.link_setting_btn.resize(150,30)
+        self.link_setting_btn.clicked.connect(self.add_link)
+    def add_link(self):
+        def start(link_name):
+            self.link[link_name] = link_path
+            f=open('./config/link.json',encoding='utf-8',mode='w')
+            f.write(str(self.link))
+            f.close()
+        if self.getPath()!="":
+            link_path = self.getPath()
+            w1=InputMessageBox(title=f'是否将目录: {link_path} 加入快捷方式栏',placeholderText='输入快捷方式名...',parent=self.back_btn.parent().parent().parent())
+            if w1.exec():
+                if w1.urlLineEdit.text() in self.link:
+                    w=MessageBox(title='温馨提醒',content='当前名称已存在,是否替换?',parent=self.back_btn.parent().parent().parent())
+                    w.show()
+                    if not w.exec():
+                        return
+                start(w1.urlLineEdit.text())
+                self.init_file_link()
+        else:
+            w = InfoBar(
+                icon=InfoBarIcon.ERROR,
+                title='请先打开一个目录再重试',
+                content='',
+                orient=Qt.Horizontal,
+                isClosable=False,
+                position=InfoBarPosition.TOP,
+                duration=2000,
+                parent=self.back_btn.parent().parent().parent()
+            )
+            w.show()
+    def delete_link(self,link_widget:PushButton):
+        link_widget.deleteLater()
+        self.link.pop(link_widget.text())
+        f = open('./config/link.json', encoding='utf-8', mode='w')
+        f.write(str(self.link))
+        f.close()
+    def set_file_name(self,name):
+        self.file_info_frame.textBrowser.setText(f'{name}')
+
+class Ui_file_info_frame(object):
+    def setupUi(self, file_info_frame):
+        file_info_frame.setObjectName("file_info_frame")
+        file_info_frame.resize(226, 188)
+        self.verticalLayout_2 = QtWidgets.QVBoxLayout(file_info_frame)
+        self.verticalLayout_2.setContentsMargins(0, 0, 0, 0)
+        self.verticalLayout_2.setSpacing(0)
+        self.verticalLayout_2.setObjectName("verticalLayout_2")
+        self.ScrollArea = QtWidgets.QFrame(file_info_frame)
+        self.ScrollArea.setObjectName("ScrollArea")
+        self.verticalLayout_3 = QtWidgets.QVBoxLayout(self.ScrollArea)
+        self.verticalLayout_3.setContentsMargins(0, 0, 0, 0)
+        self.verticalLayout_3.setObjectName("verticalLayout_3")
+        self.verticalLayout = QtWidgets.QVBoxLayout()
+        self.verticalLayout.setSpacing(0)
+        self.verticalLayout.setObjectName("verticalLayout")
+        self.horizontalLayout_2 = QtWidgets.QHBoxLayout()
+        self.horizontalLayout_2.setObjectName("horizontalLayout_2")
+        self.icon = IconWidget(self.ScrollArea)
+        self.icon.setMinimumSize(QtCore.QSize(80, 80))
+        self.icon.setMaximumSize(QtCore.QSize(80, 80))
+        self.icon.setObjectName("icon")
+        self.horizontalLayout_2.addWidget(self.icon)
+        self.textBrowser = TextEdit(self.ScrollArea)
+        self.textBrowser.setMaximumSize(QtCore.QSize(16777215, 80))
+        font = QtGui.QFont()
+        font.setFamily("微软雅黑")
+        font.setPointSize(14)
+        self.textBrowser.setFont(font)
+        self.textBrowser.setSizeAdjustPolicy(QtWidgets.QAbstractScrollArea.AdjustIgnored)
+        self.textBrowser.setAcceptRichText(False)
+        self.textBrowser.setObjectName("textBrowser")
+        self.horizontalLayout_2.addWidget(self.textBrowser)
+        self.verticalLayout.addLayout(self.horizontalLayout_2)
+        self.file_type = BodyLabel(self.ScrollArea)
+        self.file_type.setObjectName("file_type")
+        self.verticalLayout.addWidget(self.file_type)
+        self.file_time = BodyLabel(self.ScrollArea)
+        self.file_time.setObjectName("file_time")
+        self.verticalLayout.addWidget(self.file_time)
+        self.file_size = BodyLabel(self.ScrollArea)
+        self.file_size.setObjectName("file_size")
+        self.verticalLayout.addWidget(self.file_size)
+        self.verticalLayout_3.addLayout(self.verticalLayout)
+        self.verticalLayout_2.addWidget(self.ScrollArea)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Ignored, QtWidgets.QSizePolicy.Minimum)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        self.ScrollArea.setSizePolicy(sizePolicy)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        self.textBrowser.setSizePolicy(sizePolicy)
+        self.retranslateUi(file_info_frame)
+        QtCore.QMetaObject.connectSlotsByName(file_info_frame)
+
+    def retranslateUi(self, file_info_frame):
+        _translate = QtCore.QCoreApplication.translate
+        file_info_frame.setWindowTitle(_translate("file_info_frame", "Frame"))
+        self.textBrowser.setHtml(_translate("file_info_frame", "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
+"<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
+"p, li { white-space: pre-wrap; }\n"
+"</style></head><body style=\" font-family:\'微软雅黑\'; font-size:12pt; font-weight:400; font-style:normal;\">\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:10pt;\">--</span></p></body></html>"))
+        self.file_type.setText(_translate("file_info_frame", "文件类型:--"))
+        self.file_time.setText(_translate("file_info_frame", "修改时间:--"))
+        self.file_size.setText(_translate("file_info_frame", "文件大小:--"))
+        self.icon.setIcon(FIF.DOCUMENT)
+        self.textBrowser.setReadOnly(True)
+
+class WrapLabel(QtWidgets.QTextBrowser):
+    clicked = pyqtSignal()
+    doubleClick = pyqtSignal()
+    def __init__(self,parent = None):
+        super().__init__(parent = parent)
+        self.setStyleSheet('.WrapLabel{background-color:rgba(0,0,0,0);border:none}')
+        self.setContextMenuPolicy(Qt.NoContextMenu)
+        self.setTextInteractionFlags(Qt.NoTextInteraction)
+        self.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+        self.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+
+class Screen_setting(object):
+    def setupUi(self, screen_setting):
+        screen_setting.setObjectName("screen_setting")
+        screen_setting.resize(731, 558)
+        self.verticalLayout = QtWidgets.QVBoxLayout(screen_setting)
+        self.verticalLayout.setContentsMargins(0, 0, 0, 0)
+        self.verticalLayout.setSpacing(0)
+        self.verticalLayout.setObjectName("verticalLayout")
+        self.ScrollArea = ScrollArea(screen_setting)
+        self.ScrollArea.setWidgetResizable(True)
+        self.ScrollArea.setObjectName("ScrollArea")
+        self.scrollAreaWidgetContents = QtWidgets.QFrame()
+        self.scrollAreaWidgetContents.setGeometry(QtCore.QRect(0, 0, 729, 900))
+        self.scrollAreaWidgetContents.setObjectName("scrollAreaWidgetContents_screen")
+        self.verticalLayout_2 = QtWidgets.QVBoxLayout(self.scrollAreaWidgetContents)
+        self.verticalLayout_2.setContentsMargins(0, 0, 0, 0)
+        self.verticalLayout_2.setObjectName("verticalLayout_2")
+        self.scrcpy = QtWidgets.QGroupBox(self.scrollAreaWidgetContents)
+        self.scrcpy.setMinimumSize(QtCore.QSize(0, 110))
+        self.scrcpy.setObjectName("scrcpy")
+        self.verticalLayout_3 = QtWidgets.QVBoxLayout(self.scrcpy)
+        self.verticalLayout_3.setObjectName("verticalLayout_3")
+        self.horizontalLayout_2 = QtWidgets.QHBoxLayout()
+        self.horizontalLayout_2.setObjectName("horizontalLayout_2")
+        spacerItem = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
+        self.horizontalLayout_2.addItem(spacerItem)
+        self.startScrcpy = PushButton(self.scrcpy)
+        self.startScrcpy.setObjectName("startScrcpy")
+        self.horizontalLayout_2.addWidget(self.startScrcpy)
+        spacerItem1 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
+        self.horizontalLayout_2.addItem(spacerItem1)
+        self.verticalLayout_3.addLayout(self.horizontalLayout_2)
+        self.horizontalLayout = QtWidgets.QHBoxLayout()
+        self.horizontalLayout.setObjectName("horizontalLayout")
+        self.CheckBox = CheckBox(self.scrcpy)
+        self.CheckBox.setObjectName("CheckBox")
+        self.horizontalLayout.addWidget(self.CheckBox)
+        self.savePath = LineEdit(self.scrcpy)
+        self.savePath.setReadOnly(True)
+        self.savePath.setObjectName("savePath")
+        self.horizontalLayout.addWidget(self.savePath)
+        self.chooseFile = PrimaryToolButton(self.scrcpy)
+        self.chooseFile.setText("")
+        self.chooseFile.setObjectName("chooseFile")
+        self.horizontalLayout.addWidget(self.chooseFile)
+        self.verticalLayout_3.addLayout(self.horizontalLayout)
+        self.verticalLayout_2.addWidget(self.scrcpy)
+        self.scrcpy_2 = QtWidgets.QGroupBox(self.scrollAreaWidgetContents)
+        self.scrcpy_2.setMinimumSize(QtCore.QSize(0, 110))
+        self.scrcpy_2.setObjectName("scrcpy_2")
+        self.verticalLayout_8 = QtWidgets.QVBoxLayout(self.scrcpy_2)
+        self.verticalLayout_8.setObjectName("verticalLayout_8")
+        self.horizontalLayout_14 = QtWidgets.QHBoxLayout()
+        self.horizontalLayout_14.setObjectName("horizontalLayout_14")
+        spacerItem2 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
+        self.horizontalLayout_14.addItem(spacerItem2)
+        self.startscreenshot = PushButton(self.scrcpy_2)
+        self.startscreenshot.setObjectName("startscreenshot")
+        self.horizontalLayout_14.addWidget(self.startscreenshot)
+        spacerItem3 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
+        self.horizontalLayout_14.addItem(spacerItem3)
+        self.verticalLayout_8.addLayout(self.horizontalLayout_14)
+        self.horizontalLayout_15 = QtWidgets.QHBoxLayout()
+        self.horizontalLayout_15.setObjectName("horizontalLayout_15")
+        self.savePath_2 = LineEdit(self.scrcpy_2)
+        self.savePath_2.setReadOnly(True)
+        self.savePath_2.setObjectName("savePath_2")
+        self.horizontalLayout_15.addWidget(self.savePath_2)
+        self.chooseFile_2 = PrimaryToolButton(self.scrcpy_2)
+        self.chooseFile_2.setText("")
+        self.chooseFile_2.setObjectName("chooseFile_2")
+        self.horizontalLayout_15.addWidget(self.chooseFile_2)
+        self.verticalLayout_8.addLayout(self.horizontalLayout_15)
+        self.verticalLayout_2.addWidget(self.scrcpy_2)
+        self.setDPI = QtWidgets.QGroupBox(self.scrollAreaWidgetContents)
+        self.setDPI.setMinimumSize(QtCore.QSize(0, 100))
+        self.setDPI.setObjectName("setDPI")
+        self.verticalLayout_4 = QtWidgets.QVBoxLayout(self.setDPI)
+        self.verticalLayout_4.setObjectName("verticalLayout_4")
+        self.horizontalLayout_3 = QtWidgets.QHBoxLayout()
+        self.horizontalLayout_3.setObjectName("horizontalLayout_3")
+        self.currentDPI = BodyLabel(self.setDPI)
+        self.currentDPI.setObjectName("currentDPI")
+        self.horizontalLayout_3.addWidget(self.currentDPI)
+        self.defaultDPI = BodyLabel(self.setDPI)
+        self.defaultDPI.setObjectName("defaultDPI")
+        self.horizontalLayout_3.addWidget(self.defaultDPI)
+        self.verticalLayout_4.addLayout(self.horizontalLayout_3)
+        self.horizontalLayout_4 = QtWidgets.QHBoxLayout()
+        self.horizontalLayout_4.setObjectName("horizontalLayout_4")
+        self.setDPIedit = LineEdit(self.setDPI)
+        self.setDPIedit.setObjectName("setDPIedit")
+        self.horizontalLayout_4.addWidget(self.setDPIedit)
+        self.setDPIbutton = PrimaryPushButton(self.setDPI)
+        self.setDPIbutton.setObjectName("setDPIbutton")
+        self.horizontalLayout_4.addWidget(self.setDPIbutton)
+        self.setDPIdefault = PrimaryPushButton(self.setDPI)
+        self.setDPIdefault.setObjectName("setDPIdefault")
+        self.horizontalLayout_4.addWidget(self.setDPIdefault)
+        self.verticalLayout_4.addLayout(self.horizontalLayout_4)
+        self.verticalLayout_2.addWidget(self.setDPI)
+        self.setSize = QtWidgets.QGroupBox(self.scrollAreaWidgetContents)
+        self.setSize.setMinimumSize(QtCore.QSize(0, 100))
+        self.setSize.setObjectName("setSize")
+        self.verticalLayout_5 = QtWidgets.QVBoxLayout(self.setSize)
+        self.verticalLayout_5.setObjectName("verticalLayout_5")
+        self.horizontalLayout_5 = QtWidgets.QHBoxLayout()
+        self.horizontalLayout_5.setObjectName("horizontalLayout_5")
+        self.currentSize = BodyLabel(self.setSize)
+        self.currentSize.setObjectName("currentSize")
+        self.horizontalLayout_5.addWidget(self.currentSize)
+        self.BodyLabel = BodyLabel(self.setSize)
+        self.BodyLabel.setObjectName("BodyLabel")
+        self.horizontalLayout_5.addWidget(self.BodyLabel)
+        self.verticalLayout_5.addLayout(self.horizontalLayout_5)
+        self.horizontalLayout_6 = QtWidgets.QHBoxLayout()
+        self.horizontalLayout_6.setObjectName("horizontalLayout_6")
+        self.setWEdit = LineEdit(self.setSize)
+        self.setWEdit.setObjectName("setWEdit")
+        self.horizontalLayout_6.addWidget(self.setWEdit)
+        self.BodyLabel_3 = BodyLabel(self.setSize)
+        self.BodyLabel_3.setObjectName("BodyLabel_3")
+        self.horizontalLayout_6.addWidget(self.BodyLabel_3)
+        self.setHEdit = LineEdit(self.setSize)
+        self.setHEdit.setObjectName("setHEdit")
+        self.horizontalLayout_6.addWidget(self.setHEdit)
+        self.setSizeButton = PrimaryPushButton(self.setSize)
+        self.setSizeButton.setObjectName("setSizeButton")
+        self.horizontalLayout_6.addWidget(self.setSizeButton)
+        self.setSizeDefault = PrimaryPushButton(self.setSize)
+        self.setSizeDefault.setObjectName("setSizeDefault")
+        self.horizontalLayout_6.addWidget(self.setSizeDefault)
+        self.verticalLayout_5.addLayout(self.horizontalLayout_6)
+        self.verticalLayout_2.addWidget(self.setSize)
+        self.timeout = QtWidgets.QGroupBox(self.scrollAreaWidgetContents)
+        self.timeout.setMinimumSize(QtCore.QSize(0, 100))
+        self.timeout.setObjectName("timeout")
+        self.verticalLayout_6 = QtWidgets.QVBoxLayout(self.timeout)
+        self.verticalLayout_6.setObjectName("verticalLayout_6")
+        self.BodyLabel_2 = BodyLabel(self.timeout)
+        self.BodyLabel_2.setObjectName("BodyLabel_2")
+        self.verticalLayout_6.addWidget(self.BodyLabel_2)
+        self.horizontalLayout_8 = QtWidgets.QHBoxLayout()
+        self.horizontalLayout_8.setObjectName("horizontalLayout_8")
+        self.setTimeoutEdit = LineEdit(self.timeout)
+        self.setTimeoutEdit.setObjectName("setTimeoutEdit")
+        self.horizontalLayout_8.addWidget(self.setTimeoutEdit)
+        self.setTimeoutButton = PrimaryPushButton(self.timeout)
+        self.setTimeoutButton.setObjectName("setTimeoutButton")
+        self.horizontalLayout_8.addWidget(self.setTimeoutButton)
+        self.verticalLayout_6.addLayout(self.horizontalLayout_8)
+        self.verticalLayout_2.addWidget(self.timeout)
+        self.setTheme = QtWidgets.QGroupBox(self.scrollAreaWidgetContents)
+        self.setTheme.setMinimumSize(QtCore.QSize(0, 70))
+        self.setTheme.setObjectName("setTheme")
+        self.horizontalLayout_7 = QtWidgets.QHBoxLayout(self.setTheme)
+        self.horizontalLayout_7.setObjectName("horizontalLayout_7")
+        spacerItem4 = QtWidgets.QSpacerItem(146, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
+        self.horizontalLayout_7.addItem(spacerItem4)
+        self.setBlackMode = PrimaryPushButton(self.setTheme)
+        self.setBlackMode.setObjectName("setBlackMode")
+        self.horizontalLayout_7.addWidget(self.setBlackMode)
+        spacerItem5 = QtWidgets.QSpacerItem(146, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
+        self.horizontalLayout_7.addItem(spacerItem5)
+        self.setWhiteMode = PrimaryPushButton(self.setTheme)
+        self.setWhiteMode.setObjectName("setWhiteMode")
+        self.horizontalLayout_7.addWidget(self.setWhiteMode)
+        spacerItem6 = QtWidgets.QSpacerItem(146, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
+        self.horizontalLayout_7.addItem(spacerItem6)
+        self.verticalLayout_2.addWidget(self.setTheme)
+        self.rotation = QtWidgets.QGroupBox(self.scrollAreaWidgetContents)
+        self.rotation.setMinimumSize(QtCore.QSize(0, 70))
+        self.rotation.setObjectName("rotation")
+        self.horizontalLayout_9 = QtWidgets.QHBoxLayout(self.rotation)
+        self.horizontalLayout_9.setObjectName("horizontalLayout_9")
+        spacerItem7 = QtWidgets.QSpacerItem(146, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
+        self.horizontalLayout_9.addItem(spacerItem7)
+        self.openRotation = PrimaryPushButton(self.rotation)
+        self.openRotation.setObjectName("openRotation")
+        self.horizontalLayout_9.addWidget(self.openRotation)
+        spacerItem8 = QtWidgets.QSpacerItem(146, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
+        self.horizontalLayout_9.addItem(spacerItem8)
+        self.closeRotation = PrimaryPushButton(self.rotation)
+        self.closeRotation.setObjectName("closeRotation")
+        self.horizontalLayout_9.addWidget(self.closeRotation)
+        spacerItem9 = QtWidgets.QSpacerItem(146, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
+        self.horizontalLayout_9.addItem(spacerItem9)
+        self.verticalLayout_2.addWidget(self.rotation)
+        self.groupBox_2 = QtWidgets.QGroupBox(self.scrollAreaWidgetContents)
+        self.groupBox_2.setMinimumSize(QtCore.QSize(0, 180))
+        self.groupBox_2.setObjectName("groupBox_2")
+        self.verticalLayout_7 = QtWidgets.QVBoxLayout(self.groupBox_2)
+        self.verticalLayout_7.setObjectName("verticalLayout_7")
+        self.horizontalLayout_10 = QtWidgets.QHBoxLayout()
+        self.horizontalLayout_10.setObjectName("horizontalLayout_10")
+        self.animation1Speed = BodyLabel(self.groupBox_2)
+        self.animation1Speed.setObjectName("animation1Speed")
+        self.horizontalLayout_10.addWidget(self.animation1Speed)
+        self.animation2Speed = BodyLabel(self.groupBox_2)
+        self.animation2Speed.setObjectName("animation2Speed")
+        self.horizontalLayout_10.addWidget(self.animation2Speed)
+        self.animation3Speed = BodyLabel(self.groupBox_2)
+        self.animation3Speed.setObjectName("animation3Speed")
+        self.horizontalLayout_10.addWidget(self.animation3Speed)
+        self.verticalLayout_7.addLayout(self.horizontalLayout_10)
+        self.horizontalLayout_11 = QtWidgets.QHBoxLayout()
+        self.horizontalLayout_11.setObjectName("horizontalLayout_11")
+        self.setAnimation1Speed = LineEdit(self.groupBox_2)
+        self.setAnimation1Speed.setObjectName("setAnimation1Speed")
+        self.horizontalLayout_11.addWidget(self.setAnimation1Speed)
+        self.setAnimation1Button = PrimaryPushButton(self.groupBox_2)
+        self.setAnimation1Button.setObjectName("setAnimation1Button")
+        self.horizontalLayout_11.addWidget(self.setAnimation1Button)
+        self.verticalLayout_7.addLayout(self.horizontalLayout_11)
+        self.horizontalLayout_12 = QtWidgets.QHBoxLayout()
+        self.horizontalLayout_12.setObjectName("horizontalLayout_12")
+        self.setAnimation2Speed = LineEdit(self.groupBox_2)
+        self.setAnimation2Speed.setObjectName("setAnimation2Speed")
+        self.horizontalLayout_12.addWidget(self.setAnimation2Speed)
+        self.setAnimation2Button = PrimaryPushButton(self.groupBox_2)
+        self.setAnimation2Button.setObjectName("setAnimation2Button")
+        self.horizontalLayout_12.addWidget(self.setAnimation2Button)
+        self.verticalLayout_7.addLayout(self.horizontalLayout_12)
+        self.horizontalLayout_13 = QtWidgets.QHBoxLayout()
+        self.horizontalLayout_13.setObjectName("horizontalLayout_13")
+        self.setAnimation3Speed = LineEdit(self.groupBox_2)
+        self.setAnimation3Speed.setObjectName("setAnimation3Speed")
+        self.horizontalLayout_13.addWidget(self.setAnimation3Speed)
+        self.setAnimation3Button = PrimaryPushButton(self.groupBox_2)
+        self.setAnimation3Button.setObjectName("setAnimation3Button")
+        self.horizontalLayout_13.addWidget(self.setAnimation3Button)
+        self.verticalLayout_7.addLayout(self.horizontalLayout_13)
+        self.verticalLayout_2.addWidget(self.groupBox_2)
+        self.ScrollArea.setWidget(self.scrollAreaWidgetContents)
+        self.verticalLayout.addWidget(self.ScrollArea)
+
+        self.retranslateUi(screen_setting)
+        QtCore.QMetaObject.connectSlotsByName(screen_setting)
+
+    def retranslateUi(self, screen_setting):
+        _translate = QtCore.QCoreApplication.translate
+        screen_setting.setWindowTitle(_translate("screen_setting", "Frame"))
+        self.scrcpy.setTitle(_translate("screen_setting", "scrcpy投屏"))
+        self.startScrcpy.setText(_translate("screen_setting", "开始投屏"))
+        self.CheckBox.setText(_translate("screen_setting", "开启录屏"))
+        self.scrcpy_2.setTitle(_translate("screen_setting", "scrcpy投屏"))
+        self.startscreenshot.setText(_translate("screen_setting", "一键截屏"))
+        self.setDPI.setTitle(_translate("screen_setting", "修改DPI"))
+        self.currentDPI.setText(_translate("screen_setting", "当前DPI: --"))
+        self.defaultDPI.setText(_translate("screen_setting", "默认DPI: --"))
+        self.setDPIedit.setPlaceholderText(_translate("screen_setting", "输入DPI..."))
+        self.setDPIbutton.setText(_translate("screen_setting", "修改"))
+        self.setDPIdefault.setText(_translate("screen_setting", "恢复默认"))
+        self.setSize.setTitle(_translate("screen_setting", "修改屏幕分辨率"))
+        self.currentSize.setText(_translate("screen_setting", "当前分辨率: --"))
+        self.BodyLabel.setText(_translate("screen_setting", "默认分辨率: --"))
+        self.setWEdit.setPlaceholderText(_translate("screen_setting", "输入屏幕长度..."))
+        self.BodyLabel_3.setText(_translate("screen_setting", "X"))
+        self.setHEdit.setPlaceholderText(_translate("screen_setting", "输入屏幕宽度..."))
+        self.setSizeButton.setText(_translate("screen_setting", "修改"))
+        self.setSizeDefault.setText(_translate("screen_setting", "恢复默认"))
+        self.timeout.setTitle(_translate("screen_setting", "修改屏幕超时时间"))
+        self.BodyLabel_2.setText(_translate("screen_setting", "当前屏幕超时时间: --秒"))
+        self.setTimeoutEdit.setPlaceholderText(_translate("screen_setting", "输入屏幕超时时间(秒)..."))
+        self.setTimeoutButton.setText(_translate("screen_setting", "修改"))
+        self.setTheme.setTitle(_translate("screen_setting", "系统颜色模式"))
+        self.setBlackMode.setText(_translate("screen_setting", "设为深色模式"))
+        self.setWhiteMode.setText(_translate("screen_setting", "设为浅色模式"))
+        self.rotation.setTitle(_translate("screen_setting", "屏幕旋转"))
+        self.openRotation.setText(_translate("screen_setting", "开启屏幕旋转"))
+        self.closeRotation.setText(_translate("screen_setting", "关闭屏幕旋转"))
+        self.groupBox_2.setTitle(_translate("screen_setting", "动画缩放"))
+        self.animation1Speed.setText(_translate("screen_setting", "窗口动画速度: --x"))
+        self.animation2Speed.setText(_translate("screen_setting", "过渡动画速度: --x"))
+        self.animation3Speed.setText(_translate("screen_setting", "动画程序速度: --x"))
+        self.setAnimation1Speed.setPlaceholderText(_translate("screen_setting", "输入窗口动画速度..."))
+        self.setAnimation1Button.setText(_translate("screen_setting", "修改"))
+        self.setAnimation2Speed.setPlaceholderText(_translate("screen_setting", "输入窗口动画速度..."))
+        self.setAnimation2Button.setText(_translate("screen_setting", "修改"))
+        self.setAnimation3Speed.setPlaceholderText(_translate("screen_setting", "输入窗口动画速度..."))
+        self.setAnimation3Button.setText(_translate("screen_setting", "修改"))
+        self.chooseFile.setIcon(FIF.FOLDER)
+        self.chooseFile_2.setIcon(FIF.FOLDER)
+
+        validator = QtGui.QIntValidator()
+        validator.setRange(50, 400)
+
+        self.setDPIedit.setValidator(validator)
+
+        validator = QtGui.QIntValidator()
+        validator.setRange(0, 3000)
+
+        self.setWEdit.setValidator(validator)
+        self.setHEdit.setValidator(validator)
+
+class AutoRootTool(object):
+    def setupUi(self, autoRootTool):
+        autoRootTool.setObjectName("autoRootTool")
+        autoRootTool.resize(618, 637)
+        self.verticalLayout = QtWidgets.QVBoxLayout(autoRootTool)
+        self.verticalLayout.setObjectName("verticalLayout")
+        self.groupBox = QtWidgets.QGroupBox(autoRootTool)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Expanding)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.groupBox.sizePolicy().hasHeightForWidth())
+        self.groupBox.setSizePolicy(sizePolicy)
+        self.groupBox.setMinimumSize(QtCore.QSize(600, 200))
+        self.groupBox.setMaximumSize(QtCore.QSize(16777215, 200))
+        self.groupBox.setObjectName("groupBox")
+        self.horizontalLayout = QtWidgets.QHBoxLayout(self.groupBox)
+        self.horizontalLayout.setObjectName("horizontalLayout")
+        self.Z6_DFBcard = ModelCard(self.groupBox,name = 'Z6巅峰版')
+        self.horizontalLayout.addWidget(self.Z6_DFBcard)
+        self.Z7card = ModelCard(self.groupBox,name = 'Z7')
+        self.horizontalLayout.addWidget(self.Z7card)
+        self.Z8card = ModelCard(self.groupBox,name = 'Z8')
+        self.horizontalLayout.addWidget(self.Z8card)
+        self.Z8_SNBcard = ModelCard(self.groupBox,name='Z8少年版')
+        self.horizontalLayout.addWidget(self.Z8_SNBcard)
+        self.Z8_Acard = ModelCard(self.groupBox, name='Z8A')
+        self.horizontalLayout.addWidget(self.Z8_Acard)
+        self.verticalLayout.addWidget(self.groupBox)
+        self.groupBox_2 = QtWidgets.QGroupBox(autoRootTool)
+        self.groupBox_2.setObjectName("groupBox_2")
+        self.horizontalLayout_2 = QtWidgets.QHBoxLayout(self.groupBox_2)
+        self.horizontalLayout_2.setObjectName("horizontalLayout_2")
+        spacerItem = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
+        self.horizontalLayout_2.addItem(spacerItem)
+        self.PushButton = PushButton(self.groupBox_2)
+        self.PushButton.setObjectName("PushButton")
+        self.horizontalLayout_2.addWidget(self.PushButton)
+        spacerItem1 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
+        self.horizontalLayout_2.addItem(spacerItem1)
+        self.PushButton_2 = PushButton(self.groupBox_2)
+        self.PushButton_2.setObjectName("PushButton_2")
+        self.horizontalLayout_2.addWidget(self.PushButton_2)
+        spacerItem2 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
+        self.horizontalLayout_2.addItem(spacerItem2)
+        self.verticalLayout.addWidget(self.groupBox_2)
+        self.TextEdit = TextEdit(autoRootTool)
+        self.TextEdit.setReadOnly(True)
+        self.TextEdit.setObjectName("TextEdit")
+        self.verticalLayout.addWidget(self.TextEdit)
+
+        self.retranslateUi(autoRootTool)
+        QtCore.QMetaObject.connectSlotsByName(autoRootTool)
+    def retranslateUi(self, autoRootTool):
+        _translate = QtCore.QCoreApplication.translate
+        autoRootTool.setWindowTitle(_translate("autoRootTool", "Form"))
+        self.groupBox.setTitle(_translate("autoRootTool", "选择机型"))
+        self.groupBox_2.setTitle(_translate("autoRootTool", "操作模式"))
+        self.PushButton.setText(_translate("autoRootTool", "一键root"))
+        self.PushButton_2.setText(_translate("autoRootTool", "恢复原样"))
+        self.TextEdit.setPlaceholderText(_translate("autoRootTool", "操作输出..."))
+        z8_A = QtGui.QPixmap('./img/Z8A.png')
+        self.Z8_Acard.icon.setScaledContents(True)
+        self.Z8_Acard.icon.setPixmap(z8_A)
+        z8_snb = QtGui.QPixmap('./img/Z8_SNB.png')
+        self.Z8_SNBcard.icon.setScaledContents(True)
+        self.Z8_SNBcard.icon.setPixmap(z8_snb)
+        z8 = QtGui.QPixmap('./img/Z8.png')
+        self.Z8card.icon.setScaledContents(True)
+        self.Z8card.icon.setPixmap(z8)
+        z7 = QtGui.QPixmap('./img/Z7.png')
+        self.Z7card.icon.setScaledContents(True)
+        self.Z7card.icon.setPixmap(z7)
+        z6_dfb = QtGui.QPixmap('./img/Z6_DFB.png')
+        self.Z6_DFBcard.icon.setScaledContents(True)
+        self.Z6_DFBcard.icon.setPixmap(z6_dfb)

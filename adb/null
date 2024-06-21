@@ -1,0 +1,106 @@
+
+Base Version: 18.02.16.18.26
+Binary build date: Apr 27 2018 @ 03:04:29
+Incremental Build version: 18.04.27.03.04.29
+
+15:57:36: INFO: FH_LOADER WAS CALLED EXACTLY LIKE THIS
+************************************************
+fh_loader.exe --port=\\.\COM5 --sendxml=./framework/Z8_SNB.xml --search_path=C:\Users\Z\Desktop\小天才工具\Qt_XTC_box\adb\framework --noprompt --showpercentagecomplete --memoryname=eMMC --setactivepartition=0 --reset 
+************************************************
+
+15:57:36: INFO: Current working dir (cwd): C:\Users\Z\Desktop\小天才工具\Qt_XTC_box\adb\
+15:57:36: INFO: Showing network mappings to allow debugging
+15:57:36: INFO: 
+
+
+
+15:57:36: INFO: Trying to store './framework/Z8_SNB.xml' in string table
+15:57:36: INFO: Looking for file './framework/Z8_SNB.xml'
+15:57:36: INFO: User wants to talk to port '\\.\COM5'
+15:57:36: INFO: Took       0.14000000 seconds to open port
+15:57:36: INFO: Sorting TAGS to ensure order is <configure>,<erase>, others, <patch>,<power>
+15:57:36: INFO: If  you don't want this, use --dontsorttags
+
+15:57:36: INFO: Looking for file './framework/Z8.img'
+15:57:36: INFO: Looking for file './framework/misc.img'
+15:57:36: INFO: 
+
+Total to be tansferd with <program> or <read> is 17.33 MB
+
+
+15:57:36: INFO: Sending <configure>
+
+15:57:36: INFO: TARGET SAID: 'logbuf@0x08071320 fh@0x0806E188'
+15:57:36: INFO: fh.attrs.MaxPayloadSizeToTargetInBytes = 1048576
+15:57:36: INFO: fh.attrs.MaxPayloadSizeToTargetInBytesSupported = 1048576
+15:57:36: INFO: In handleProgram('./framework/Z8.img')
+15:57:36: INFO: Looking for file './framework/Z8.img'
+15:57:36: INFO: =======================================================
+15:57:36: INFO: {<program> FILE: './framework/Z8.img'}
+15:57:36: INFO: {<program> (16.33 MB) 33452 sectors needed at location 1421568 on LUN 0}
+15:57:36: INFO: =======================================================
+
+
+15:57:36: INFO: TARGET SAID: 'logbuf@0x08071320 fh@0x0806E188'
+
+15:57:36: INFO: TARGET SAID: 'start 1421568, num 33452'
+
+15:57:37: INFO: Overall to target  0.907 seconds (18.01 MBps)
+15:57:37: INFO: {percent files transferred  94.23%}
+
+15:57:37: INFO: TARGET SAID: 'Finished sector address 1455020'
+15:57:37: INFO: 
+15:57:37: INFO: =======================================================
+15:57:37: INFO: ==================== {SUCCESS} ========================
+15:57:37: INFO: =======================================================
+
+
+15:57:37: INFO: {percent files transferred  94.23%}
+15:57:37: INFO: In handleProgram('./framework/misc.img')
+15:57:37: INFO: Looking for file './framework/misc.img'
+15:57:37: INFO: =======================================================
+15:57:37: INFO: {<program> FILE: './framework/misc.img'}
+15:57:37: INFO: {<program> (1.00 MB) 2048 sectors needed at location 5570560 on LUN 0}
+15:57:37: INFO: =======================================================
+
+
+15:57:37: INFO: TARGET SAID: 'start 5570560, num 2048'
+
+15:57:37: INFO: FILE ACCESS SLOW!!    1.00 MB in  0.015 seconds (  66.67 MBps) --- Overall to target  0.047 seconds (21.28 MBps)
+15:57:37: INFO: {percent files transferred 100.00%}
+
+15:57:37: INFO: TARGET SAID: 'Finished sector address 5572608'
+15:57:37: INFO: 
+15:57:37: INFO: =======================================================
+15:57:37: INFO: ==================== {SUCCESS} ========================
+15:57:37: INFO: =======================================================
+
+
+15:57:37: INFO: {percent files transferred 100.00%}
+15:57:37: INFO: Sending <setbootablestoragedrive>
+
+15:57:37: INFO: TARGET SAID: 'Set bootable drive to 0.'
+15:57:37: INFO: Sending <power>
+15:57:37: INFO: ==============================================================
+15:57:37: INFO: Files used and their paths
+15:57:37: INFO:   1 'C:\Users\Z\Desktop\小天才工具\Qt_XTC_box\adb\port_trace.txt'
+15:57:37: INFO:   2 './framework/Z8_SNB.xml'
+15:57:37: INFO:   3 './framework/Z8.img'
+15:57:37: INFO:   4 './framework/misc.img'
+
+15:57:37: INFO:      _             (done)
+15:57:37: INFO:     | |                 
+15:57:37: INFO:   __| | ___  _ __   ___ 
+15:57:37: INFO:  / _` |/ _ \| '_ \ / _ \
+15:57:37: INFO: | (_| | (_) | | | |  __/
+15:57:37: INFO:  \__,_|\___/|_| |_|\___|
+15:57:37: INFO: {All Finished Successfully}
+
+15:57:37: INFO: Overall to target  1.250 seconds (13.87 MBps)
+15:57:37: INFO: {percent files transferred 100.00%}
+
+Writing log to 'C:\Users\Z\Desktop\小天才工具\Qt_XTC_box\adb\port_trace.txt', might take a minute
+
+
+Log is 'C:\Users\Z\Desktop\小天才工具\Qt_XTC_box\adb\port_trace.txt'
+

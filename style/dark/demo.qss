@@ -21,7 +21,7 @@ StandardTitleBar {
 
 StandardTitleBar > QLabel,
 Widget > QLabel {
-    color: white;
+    color: white;font-family:'微软雅黑'
 }
 
 
@@ -43,6 +43,7 @@ MaximizeButton {
     qproperty-pressedColor: white;
     qproperty-pressedBackgroundColor: rgba(255, 255, 255, 51)
 }
+
 
 CloseButton {
     qproperty-normalColor: white;
@@ -67,9 +68,10 @@ CloseButton {
     background-color: rgba(39, 39, 39, 0.93);
     border: 1px solid rgb(66, 66, 66);
 }
-QLabel {color:white}
+
 
 .QFrame#frame_2 {border:none;background-color: rgba(39, 39, 39, 0.95);}
+.QFrame#scrollAreaWidgetContents1 {border:none;background-color: rgb(32, 32, 32);}
 .QFrame#apk_info_frame {border:none;background-color: rgba(39, 39, 39, 0.95);}
 
 .ScrollArea{background-color:rgba(39, 39, 39, 0.95);border:0px}
@@ -79,4 +81,32 @@ TableWidget#tableWidget{border: 1px solid rgb(66, 66, 66)}
 .QFrame#device_frame{background-color:transparent;border:0px}
 .QFrame#device_frame:hover{background-color:transparent;border:0px}
 .QFrame#scrollAreaWidgetContents_main{background-color: rgb(29, 29, 29);border:0px}
+.QFrame#scrollAreaWidgetContents_screen{background-color: rgb(29, 29, 29);border:0px}
+
+File_card {
+    background-color: rgba(39, 39, 39, 0.93);
+    border: 1px solid rgb(29, 29, 29);
+    border-radius: 6px;
+}
+
+
+File_card[isSelected=true] {
+    background-color: #ff00b7c1;
+}
+
+File_card[isSelected=true] > WrapLabel {
+    color:black;
+}
+
+.QFrame#file_widget{background:transparent;border:none}
+
+.QLabel {color:white}
 .QGroupBox{color:white}
+.WrapLabel{color:white}
+
+.QTextBrowser {border:none;background-color:rgba(39,39,39,0);color:white}
+
+.QFrame#func_app:hover{border:none;background-color:rgba(0,0,0,0)}
+.QFrame#func_app{border:none;background-color:rgba(0,0,0,0)}
+.QFrame#func_xtc:hover{border:none;background-color:rgba(0,0,0,0)}
+.QFrame#func_xtc{border:none;background-color:rgba(0,0,0,0)}

@@ -58,3 +58,29 @@ ScrollArea{background-color:rgba(249, 249, 249, 0.93);border:0px}
 .QFrame#device_frame{background-color:transparent;border:0px}
 .QFrame#device_frame:hover{background-color:transparent;border:0px}
 .QGroupBox{color:black}
+
+File_card {
+    background-color: rgb(251, 251, 251);
+    border: 1px solid rgb(229, 229, 229);
+    border-radius: 6px;
+}
+
+File_card > BodyLabel {
+    color: rgb(96, 96, 96);
+    font: 11px 'Segoe UI', 'PingFang SC';
+}
+
+File_card[isSelected=true] {
+    background-color: #ff00b7c1;
+}
+
+File_card[isSelected=true] > WrapLabel {
+    color: white;
+}
+.QFrame#file_widget{background:transparent;border:none}
+.WrapLabel{color:black}
+
+.QTextBrowser {border:none;background-color:rgba(0,0,0,0);color:white}
+.QGroupBox{color:white}
+.QFrame#scrollAreaWidgetContents1{border:none;background-color:rgb(243, 243, 243)}
+.QFrame#scrollAreaWidgetContents_screen{background-color:rgb(243, 243, 243);border:0px}

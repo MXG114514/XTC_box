@@ -1,0 +1,442 @@
+
+15:57:36: INFO: FH_LOADER WAS CALLED EXACTLY LIKE THIS
+************************************************
+fh_loader.exe --port=\\.\COM5 --sendxml=./framework/Z8_SNB.xml --search_path=C:\Users\Z\Desktop\小天才工具\Qt_XTC_box\adb\framework --noprompt --showpercentagecomplete --memoryname=eMMC --setactivepartition=0 --reset 
+************************************************
+
+15:57:36: DEBUG: Binary build date: Apr 27 2018 @ 03:04:29
+
+15:57:36: DEBUG: Build Version: 18.04.27.03.04.29
+
+15:57:36: INFO: Current working dir (cwd): C:\Users\Z\Desktop\小天才工具\Qt_XTC_box\adb\
+15:57:36: INFO: Showing network mappings to allow debugging
+15:57:36: DEBUG: 会记录新的网络连接。
+
+15:57:36: DEBUG: 
+
+15:57:36: DEBUG: 列表是空的。
+
+15:57:36: DEBUG: 
+
+15:57:36: INFO: 
+
+
+
+15:57:36: INFO: Trying to store './framework/Z8_SNB.xml' in string table
+15:57:36: DEBUG: ==================================================================================
+15:57:36: DEBUG: ==================================================================================
+15:57:36: INFO: Looking for file './framework/Z8_SNB.xml'
+15:57:36: DEBUG: 1. Calling stat('C:\Users\Z\Desktop\小天才工具\Qt_XTC_box\adb\framework\./framework/Z8_SNB.xml')
+15:57:36: DEBUG: 2. Calling stat(./framework/Z8_SNB.xml)
+15:57:36: DEBUG: 2. Calling fopen('./framework/Z8_SNB.xml') with AccessMode='rb'
+15:57:36: DEBUG: Trying get filesize, calling fseek()
+15:57:36: DEBUG: Found './framework/Z8_SNB.xml' (576 bytes) in local directory 'C:\Users\Z\Desktop\小天才工具\Qt_XTC_box\adb\
+15:57:36: DEBUG: 2. Calling fopen('./framework/Z8_SNB.xml') with AccessMode='r'
+15:57:36: DEBUG: Trying get filesize, calling fseek()
+15:57:36: INFO: User wants to talk to port '\\.\COM5'
+15:57:36: DEBUG: port_fd=0x148
+
+15:57:36: INFO: Took       0.14000000 seconds to open port
+15:57:36: INFO: Sorting TAGS to ensure order is <configure>,<erase>, others, <patch>,<power>
+15:57:36: INFO: If  you don't want this, use --dontsorttags
+
+15:57:36: DEBUG: ==================================================================================
+15:57:36: DEBUG: ==================================================================================
+15:57:36: INFO: Looking for file './framework/Z8.img'
+15:57:36: DEBUG: 1. Calling stat('C:\Users\Z\Desktop\小天才工具\Qt_XTC_box\adb\framework\./framework/Z8.img')
+15:57:36: DEBUG: 2. Calling stat(./framework/Z8.img)
+15:57:36: DEBUG: 2. Calling fopen('./framework/Z8.img') with AccessMode='rb'
+15:57:36: DEBUG: Trying get filesize, calling fseek()
+15:57:36: DEBUG: Found './framework/Z8.img' (17127424 bytes) in local directory 'C:\Users\Z\Desktop\小天才工具\Qt_XTC_box\adb\
+15:57:36: DEBUG: 2. Calling fopen('./framework/Z8.img') with AccessMode='rb'
+15:57:36: DEBUG: Trying get filesize, calling fseek()
+15:57:36: DEBUG: ==================================================================================
+15:57:36: DEBUG: ==================================================================================
+15:57:36: INFO: Looking for file './framework/misc.img'
+15:57:36: DEBUG: 1. Calling stat('C:\Users\Z\Desktop\小天才工具\Qt_XTC_box\adb\framework\./framework/misc.img')
+15:57:36: DEBUG: 2. Calling stat(./framework/misc.img)
+15:57:36: DEBUG: 2. Calling fopen('./framework/misc.img') with AccessMode='rb'
+15:57:36: DEBUG: Trying get filesize, calling fseek()
+15:57:36: DEBUG: Found './framework/misc.img' (1048576 bytes) in local directory 'C:\Users\Z\Desktop\小天才工具\Qt_XTC_box\adb\
+15:57:36: DEBUG: 2. Calling fopen('./framework/misc.img') with AccessMode='rb'
+15:57:36: DEBUG: Trying get filesize, calling fseek()
+15:57:36: INFO: 
+
+Total to be tansferd with <program> or <read> is 17.33 MB
+
+
+15:57:36: INFO: Sending <configure>
+15:57:36: DEBUG: CHANNEL DATA (P0000) (H00202) (    228 bytes) - HOST TO TARGET -->
+===========================================================================================================
+<?xml version="1.0" encoding="UTF-8" ?>
+<data>
+<configure MemoryName="emmc" Verbose="0" AlwaysValidate="0" MaxDigestTableSizeInBytes="8192" MaxPayloadSizeToTargetInBytes="1048576" ZlpAwareHost="1" SkipStorageInit="0" />
+</data>
+
+============================================================================================================
+
+15:57:36: DEBUG: CharsInBuffer=0 Trying to read from USB 8192 bytes
+15:57:36: DEBUG: CHANNEL DATA (499 bytes) <-- TARGET to HOST
+15:57:36: DEBUG: CharsInBuffer = 499
+15:57:36: DEBUG: printBuffer:5981 PRETTYPRINT Buffer is 499 bytes
+
+15:57:36: DEBUG: printBuffer:6058 3C 3F 78 6D 6C 20 76 65 72 73 69 6F 6E 3D 22 31 <?xml version="1
+15:57:36: DEBUG: printBuffer:6058 2E 30 22 20 65 6E 63 6F 64 69 6E 67 3D 22 55 54 .0" encoding="UT
+15:57:36: DEBUG: printBuffer:6058 46 2D 38 22 20 3F 3E 3C 64 61 74 61 3E 3C 6C 6F F-8" ?><data><lo
+15:57:36: DEBUG: printBuffer:6058 67 20 76 61 6C 75 65 3D 22 6C 6F 67 62 75 66 40 g value="logbuf@
+15:57:36: DEBUG: printBuffer:6058 30 78 30 38 30 37 31 33 32 30 20 66 68 40 30 78 0x08071320 fh@0x
+15:57:36: DEBUG: printBuffer:6058 30 38 30 36 45 31 38 38 22 20 2F 3E 3C 2F 64 61 0806E188" /></da
+15:57:36: DEBUG: printBuffer:6058 74 61 3E 3C 3F 78 6D 6C 20 76 65 72 73 69 6F 6E ta><?xml version
+15:57:36: DEBUG: printBuffer:6058 3D 22 31 2E 30 22 20 65 6E 63 6F 64 69 6E 67 3D ="1.0" encoding=
+15:57:36: DEBUG: printBuffer:6058 22 55 54 46 2D 38 22 20 3F 3E 3C 64 61 74 61 3E "UTF-8" ?><data>
+15:57:36: DEBUG: printBuffer:6058 3C 72 65 73 70 6F 6E 73 65 20 76 61 6C 75 65 3D <response value=
+15:57:36: DEBUG: printBuffer:6058 22 41 43 4B 22 20 4D 69 6E 56 65 72 73 69 6F 6E "ACK" MinVersion
+15:57:36: DEBUG: printBuffer:6058 53 75 70 70 6F 72 74 65 64 3D 22 31 22 20 4D 65 Supported="1" Me
+15:57:36: DEBUG: printBuffer:6058 6D 6F 72 79 4E 61 6D 65 3D 22 65 4D 4D 43 22 20 moryName="eMMC" 
+15:57:36: DEBUG: printBuffer:6058 4D 61 78 50 61 79 6C 6F 61 64 53 69 7A 65 46 72 MaxPayloadSizeFr
+15:57:36: DEBUG: printBuffer:6058 6F 6D 54 61 72 67 65 74 49 6E 42 79 74 65 73 3D omTargetInBytes=
+15:57:36: DEBUG: printBuffer:6058 22 34 30 39 36 22 20 4D 61 78 50 61 79 6C 6F 61 "4096" MaxPayloa
+15:57:36: DEBUG: printBuffer:6058 64 53 69 7A 65 54 6F 54 61 72 67 65 74 49 6E 42 dSizeToTargetInB
+15:57:36: DEBUG: printBuffer:6058 79 74 65 73 3D 22 31 30 34 38 35 37 36 22 20 4D ytes="1048576" M
+15:57:36: DEBUG: printBuffer:6058 61 78 50 61 79 6C 6F 61 64 53 69 7A 65 54 6F 54 axPayloadSizeToT
+15:57:36: DEBUG: printBuffer:6058 61 72 67 65 74 49 6E 42 79 74 65 73 53 75 70 70 argetInBytesSupp
+15:57:36: DEBUG: printBuffer:6058 6F 72 74 65 64 3D 22 31 30 34 38 35 37 36 22 20 orted="1048576" 
+15:57:36: DEBUG: printBuffer:6058 4D 61 78 58 4D 4C 53 69 7A 65 49 6E 42 79 74 65 MaxXMLSizeInByte
+15:57:36: DEBUG: printBuffer:6058 73 3D 22 34 30 39 36 22 20 56 65 72 73 69 6F 6E s="4096" Version
+15:57:36: DEBUG: printBuffer:6058 3D 22 31 22 20 54 61 72 67 65 74 4E 61 6D 65 3D ="1" TargetName=
+15:57:36: DEBUG: printBuffer:6058 22 38 39 33 37 22 20 2F 3E 3C 2F 64 61 74 61 3E "8937" /></data>
+15:57:36: DEBUG: printBuffer:6058 3C 3F 78 6D 6C 20 76 65 72 73 69 6F 6E 3D 22 31 <?xml version="1
+15:57:36: DEBUG: printBuffer:6058 2E 30 22 20 65 6E 63 6F 64 69 6E 67 3D 22 55 54 .0" encoding="UT
+15:57:36: DEBUG: printBuffer:6058 46 2D 38 22 20 3F 3E 3C 64 61 74 61 3E 3C 6C 6F F-8" ?><data><lo
+15:57:36: DEBUG: printBuffer:6058 67 20 76 61 6C 75 65 3D 22 6C 6F 67 62 75 66 40 g value="logbuf@
+15:57:36: DEBUG: printBuffer:6058 30 78 30 38 30 37 31 33 32 30 20 66 68 40 30 78 0x08071320 fh@0x
+15:57:36: DEBUG: printBuffer:6058 30 38 30 36 45 31 38 38 22 20 2F 3E 3C 2F 64 61 0806E188" /></da
+15:57:36: DEBUG: printBuffer:6058 74 61 3E                                        ta>
+15:57:36: DEBUG: printBuffer:6071 
+
+
+15:57:36: DEBUG: XML FILE (99 bytes): CharsInBuffer=499-99=400
+-------------------------------------------------------------------------------------------
+<?xml version="1.0" encoding="UTF-8" ?><data><log value="logbuf@0x08071320 fh@0x0806E188" /></data>
+-------------------------------------------------------------------------------------------
+
+15:57:36: INFO: TARGET SAID: 'logbuf@0x08071320 fh@0x0806E188'
+15:57:36: DEBUG: XML FILE (301 bytes): CharsInBuffer=400-301=99
+-------------------------------------------------------------------------------------------
+<?xml version="1.0" encoding="UTF-8" ?><data><response value="ACK" MinVersionSupported="1" MemoryName="eMMC" MaxPayloadSizeFromTargetInBytes="4096" MaxPayloadSizeToTargetInBytes="1048576" MaxPayloadSizeToTargetInBytesSupported="1048576" MaxXMLSizeInBytes="4096" Version="1" TargetName="8937" /></data>
+-------------------------------------------------------------------------------------------
+
+15:57:36: DEBUG: Response was 'ACK'
+15:57:36: INFO: fh.attrs.MaxPayloadSizeToTargetInBytes = 1048576
+15:57:36: INFO: fh.attrs.MaxPayloadSizeToTargetInBytesSupported = 1048576
+15:57:36: DEBUG: Got the ACK for the <configure>
+15:57:36: INFO: In handleProgram('./framework/Z8.img')
+15:57:36: DEBUG: ==================================================================================
+15:57:36: DEBUG: ==================================================================================
+15:57:36: INFO: Looking for file './framework/Z8.img'
+15:57:36: DEBUG: 1. Calling stat('C:\Users\Z\Desktop\小天才工具\Qt_XTC_box\adb\framework\./framework/Z8.img')
+15:57:36: DEBUG: 2. Calling stat(./framework/Z8.img)
+15:57:36: DEBUG: 2. Calling fopen('./framework/Z8.img') with AccessMode='rb'
+15:57:36: DEBUG: Trying get filesize, calling fseek()
+15:57:36: DEBUG: Found './framework/Z8.img' (17127424 bytes) in local directory 'C:\Users\Z\Desktop\小天才工具\Qt_XTC_box\adb\
+15:57:36: DEBUG: 2. Calling fopen('./framework/Z8.img') with AccessMode='rb'
+15:57:36: DEBUG: Trying get filesize, calling fseek()
+15:57:36: DEBUG: File size is 17127424 bytes
+15:57:36: DEBUG: NumSectors needed 33452
+15:57:36: INFO: =======================================================
+15:57:36: INFO: {<program> FILE: './framework/Z8.img'}
+15:57:36: INFO: {<program> (16.33 MB) 33452 sectors needed at location 1421568 on LUN 0}
+15:57:36: INFO: =======================================================
+
+15:57:36: DEBUG: CHANNEL DATA (P0001) (H00203) (    261 bytes) - HOST TO TARGET -->
+===========================================================================================================
+<?xml version="1.0" encoding="UTF-8" ?>
+<data>
+<program SECTOR_SIZE_IN_BYTES="512" file_sector_offset="0" filename="./framework/Z8.img" label="recovery" num_partition_sectors="33452" physical_partition_number="0" sparse="false" start_sector="1421568" />
+</data>
+============================================================================================================
+
+15:57:36: DEBUG: XML FILE (99 bytes): CharsInBuffer=99-99=0
+-------------------------------------------------------------------------------------------
+<?xml version="1.0" encoding="UTF-8" ?><data><log value="logbuf@0x08071320 fh@0x0806E188" /></data>
+-------------------------------------------------------------------------------------------
+
+15:57:36: INFO: TARGET SAID: 'logbuf@0x08071320 fh@0x0806E188'
+15:57:36: DEBUG: CharsInBuffer=0 Trying to read from USB 4096 bytes
+15:57:36: DEBUG: CHANNEL DATA (183 bytes) <-- TARGET to HOST
+15:57:36: DEBUG: CharsInBuffer = 183
+15:57:36: DEBUG: printBuffer:5981 PRETTYPRINT Buffer is 183 bytes
+
+15:57:36: DEBUG: printBuffer:6058 3C 3F 78 6D 6C 20 76 65 72 73 69 6F 6E 3D 22 31 <?xml version="1
+15:57:36: DEBUG: printBuffer:6058 2E 30 22 20 65 6E 63 6F 64 69 6E 67 3D 22 55 54 .0" encoding="UT
+15:57:36: DEBUG: printBuffer:6058 46 2D 38 22 20 3F 3E 3C 64 61 74 61 3E 3C 6C 6F F-8" ?><data><lo
+15:57:36: DEBUG: printBuffer:6058 67 20 76 61 6C 75 65 3D 22 73 74 61 72 74 20 31 g value="start 1
+15:57:36: DEBUG: printBuffer:6058 34 32 31 35 36 38 2C 20 6E 75 6D 20 33 33 34 35 421568, num 3345
+15:57:36: DEBUG: printBuffer:6058 32 22 20 2F 3E 3C 2F 64 61 74 61 3E 3C 3F 78 6D 2" /></data><?xm
+15:57:36: DEBUG: printBuffer:6058 6C 20 76 65 72 73 69 6F 6E 3D 22 31 2E 30 22 20 l version="1.0" 
+15:57:36: DEBUG: printBuffer:6058 65 6E 63 6F 64 69 6E 67 3D 22 55 54 46 2D 38 22 encoding="UTF-8"
+15:57:36: DEBUG: printBuffer:6058 20 3F 3E 3C 64 61 74 61 3E 3C 72 65 73 70 6F 6E  ?><data><respon
+15:57:36: DEBUG: printBuffer:6058 73 65 20 76 61 6C 75 65 3D 22 41 43 4B 22 20 72 se value="ACK" r
+15:57:36: DEBUG: printBuffer:6058 61 77 6D 6F 64 65 3D 22 74 72 75 65 22 20 2F 3E awmode="true" />
+15:57:36: DEBUG: printBuffer:6058 3C 2F 64 61 74 61 3E                            </data>
+15:57:36: DEBUG: printBuffer:6071 
+
+
+15:57:36: DEBUG: XML FILE (92 bytes): CharsInBuffer=183-92=91
+-------------------------------------------------------------------------------------------
+<?xml version="1.0" encoding="UTF-8" ?><data><log value="start 1421568, num 33452" /></data>
+-------------------------------------------------------------------------------------------
+
+15:57:36: INFO: TARGET SAID: 'start 1421568, num 33452'
+15:57:36: DEBUG: XML FILE (91 bytes): CharsInBuffer=91-91=0
+-------------------------------------------------------------------------------------------
+<?xml version="1.0" encoding="UTF-8" ?><data><response value="ACK" rawmode="true" /></data>
+-------------------------------------------------------------------------------------------
+
+15:57:36: DEBUG: Response was 'ACK'
+15:57:36: DEBUG: CHANNEL DATA (P0002) (H00204) (1.00 MB) - HOST TO TARGET -->
+15:57:36: DEBUG: CHANNEL DATA (P0003) (H00205) (1.00 MB) - HOST TO TARGET -->
+15:57:36: DEBUG: CHANNEL DATA (P0004) (H00206) (1.00 MB) - HOST TO TARGET -->
+15:57:36: DEBUG: CHANNEL DATA (P0005) (H00207) (1.00 MB) - HOST TO TARGET -->
+15:57:36: DEBUG: CHANNEL DATA (P0006) (H00208) (1.00 MB) - HOST TO TARGET -->
+15:57:36: DEBUG: CHANNEL DATA (P0007) (H00209) (1.00 MB) - HOST TO TARGET -->
+15:57:37: DEBUG: CHANNEL DATA (P0008) (H00210) (1.00 MB) - HOST TO TARGET -->
+15:57:37: DEBUG: CHANNEL DATA (P0009) (H00211) (1.00 MB) - HOST TO TARGET -->
+15:57:37: DEBUG: CHANNEL DATA (P0010) (H00212) (1.00 MB) - HOST TO TARGET -->
+15:57:37: DEBUG: CHANNEL DATA (P0011) (H00213) (1.00 MB) - HOST TO TARGET -->
+15:57:37: DEBUG: CHANNEL DATA (P0012) (H00214) (1.00 MB) - HOST TO TARGET -->
+15:57:37: DEBUG: CHANNEL DATA (P0013) (H00215) (1.00 MB) - HOST TO TARGET -->
+15:57:37: DEBUG: CHANNEL DATA (P0014) (H00216) (1.00 MB) - HOST TO TARGET -->
+15:57:37: DEBUG: CHANNEL DATA (P0015) (H00217) (1.00 MB) - HOST TO TARGET -->
+15:57:37: DEBUG: CHANNEL DATA (P0016) (H00218) (1.00 MB) - HOST TO TARGET -->
+15:57:37: DEBUG: CHANNEL DATA (P0017) (H00219) (1.00 MB) - HOST TO TARGET -->
+15:57:37: DEBUG: CHANNEL DATA (P0018) (H00220) (342.00 KB) - HOST TO TARGET -->
+15:57:37: INFO: Overall to target  0.907 seconds (18.01 MBps)
+15:57:37: INFO: {percent files transferred  94.23%}
+15:57:37: DEBUG: CharsInBuffer=0 Trying to read from USB 4096 bytes
+15:57:37: DEBUG: CHANNEL DATA (191 bytes) <-- TARGET to HOST
+15:57:37: DEBUG: CharsInBuffer = 191
+15:57:37: DEBUG: printBuffer:5981 PRETTYPRINT Buffer is 191 bytes
+
+15:57:37: DEBUG: printBuffer:6058 3C 3F 78 6D 6C 20 76 65 72 73 69 6F 6E 3D 22 31 <?xml version="1
+15:57:37: DEBUG: printBuffer:6058 2E 30 22 20 65 6E 63 6F 64 69 6E 67 3D 22 55 54 .0" encoding="UT
+15:57:37: DEBUG: printBuffer:6058 46 2D 38 22 20 3F 3E 3C 64 61 74 61 3E 3C 6C 6F F-8" ?><data><lo
+15:57:37: DEBUG: printBuffer:6058 67 20 76 61 6C 75 65 3D 22 46 69 6E 69 73 68 65 g value="Finishe
+15:57:37: DEBUG: printBuffer:6058 64 20 73 65 63 74 6F 72 20 61 64 64 72 65 73 73 d sector address
+15:57:37: DEBUG: printBuffer:6058 20 31 34 35 35 30 32 30 22 20 2F 3E 3C 2F 64 61  1455020" /></da
+15:57:37: DEBUG: printBuffer:6058 74 61 3E 3C 3F 78 6D 6C 20 76 65 72 73 69 6F 6E ta><?xml version
+15:57:37: DEBUG: printBuffer:6058 3D 22 31 2E 30 22 20 65 6E 63 6F 64 69 6E 67 3D ="1.0" encoding=
+15:57:37: DEBUG: printBuffer:6058 22 55 54 46 2D 38 22 20 3F 3E 3C 64 61 74 61 3E "UTF-8" ?><data>
+15:57:37: DEBUG: printBuffer:6058 3C 72 65 73 70 6F 6E 73 65 20 76 61 6C 75 65 3D <response value=
+15:57:37: DEBUG: printBuffer:6058 22 41 43 4B 22 20 72 61 77 6D 6F 64 65 3D 22 66 "ACK" rawmode="f
+15:57:37: DEBUG: printBuffer:6058 61 6C 73 65 22 20 2F 3E 3C 2F 64 61 74 61 3E    alse" /></data>
+15:57:37: DEBUG: printBuffer:6071 
+
+
+15:57:37: DEBUG: XML FILE (99 bytes): CharsInBuffer=191-99=92
+-------------------------------------------------------------------------------------------
+<?xml version="1.0" encoding="UTF-8" ?><data><log value="Finished sector address 1455020" /></data>
+-------------------------------------------------------------------------------------------
+
+15:57:37: INFO: TARGET SAID: 'Finished sector address 1455020'
+15:57:37: DEBUG: XML FILE (92 bytes): CharsInBuffer=92-92=0
+-------------------------------------------------------------------------------------------
+<?xml version="1.0" encoding="UTF-8" ?><data><response value="ACK" rawmode="false" /></data>
+-------------------------------------------------------------------------------------------
+
+15:57:37: DEBUG: Response was 'ACK'
+15:57:37: INFO: 
+15:57:37: INFO: =======================================================
+15:57:37: INFO: ==================== {SUCCESS} ========================
+15:57:37: INFO: =======================================================
+
+
+15:57:37: INFO: {percent files transferred  94.23%}
+15:57:37: INFO: In handleProgram('./framework/misc.img')
+15:57:37: DEBUG: ==================================================================================
+15:57:37: DEBUG: ==================================================================================
+15:57:37: INFO: Looking for file './framework/misc.img'
+15:57:37: DEBUG: 1. Calling stat('C:\Users\Z\Desktop\小天才工具\Qt_XTC_box\adb\framework\./framework/misc.img')
+15:57:37: DEBUG: 2. Calling stat(./framework/misc.img)
+15:57:37: DEBUG: 2. Calling fopen('./framework/misc.img') with AccessMode='rb'
+15:57:37: DEBUG: Trying get filesize, calling fseek()
+15:57:37: DEBUG: Found './framework/misc.img' (1048576 bytes) in local directory 'C:\Users\Z\Desktop\小天才工具\Qt_XTC_box\adb\
+15:57:37: DEBUG: 2. Calling fopen('./framework/misc.img') with AccessMode='rb'
+15:57:37: DEBUG: Trying get filesize, calling fseek()
+15:57:37: DEBUG: File size is 1048576 bytes
+15:57:37: DEBUG: NumSectors needed 2048
+15:57:37: INFO: =======================================================
+15:57:37: INFO: {<program> FILE: './framework/misc.img'}
+15:57:37: INFO: {<program> (1.00 MB) 2048 sectors needed at location 5570560 on LUN 0}
+15:57:37: INFO: =======================================================
+
+15:57:37: DEBUG: CHANNEL DATA (P0019) (H00221) (    258 bytes) - HOST TO TARGET -->
+===========================================================================================================
+<?xml version="1.0" encoding="UTF-8" ?>
+<data>
+<program SECTOR_SIZE_IN_BYTES="512" file_sector_offset="0" filename="./framework/misc.img" label="misc" num_partition_sectors="2048" physical_partition_number="0" sparse="false" start_sector="5570560" />
+</data>
+============================================================================================================
+
+15:57:37: DEBUG: CharsInBuffer=0 Trying to read from USB 4096 bytes
+15:57:37: DEBUG: CHANNEL DATA (182 bytes) <-- TARGET to HOST
+15:57:37: DEBUG: CharsInBuffer = 182
+15:57:37: DEBUG: printBuffer:5981 PRETTYPRINT Buffer is 182 bytes
+
+15:57:37: DEBUG: printBuffer:6058 3C 3F 78 6D 6C 20 76 65 72 73 69 6F 6E 3D 22 31 <?xml version="1
+15:57:37: DEBUG: printBuffer:6058 2E 30 22 20 65 6E 63 6F 64 69 6E 67 3D 22 55 54 .0" encoding="UT
+15:57:37: DEBUG: printBuffer:6058 46 2D 38 22 20 3F 3E 3C 64 61 74 61 3E 3C 6C 6F F-8" ?><data><lo
+15:57:37: DEBUG: printBuffer:6058 67 20 76 61 6C 75 65 3D 22 73 74 61 72 74 20 35 g value="start 5
+15:57:37: DEBUG: printBuffer:6058 35 37 30 35 36 30 2C 20 6E 75 6D 20 32 30 34 38 570560, num 2048
+15:57:37: DEBUG: printBuffer:6058 22 20 2F 3E 3C 2F 64 61 74 61 3E 3C 3F 78 6D 6C " /></data><?xml
+15:57:37: DEBUG: printBuffer:6058 20 76 65 72 73 69 6F 6E 3D 22 31 2E 30 22 20 65  version="1.0" e
+15:57:37: DEBUG: printBuffer:6058 6E 63 6F 64 69 6E 67 3D 22 55 54 46 2D 38 22 20 ncoding="UTF-8" 
+15:57:37: DEBUG: printBuffer:6058 3F 3E 3C 64 61 74 61 3E 3C 72 65 73 70 6F 6E 73 ?><data><respons
+15:57:37: DEBUG: printBuffer:6058 65 20 76 61 6C 75 65 3D 22 41 43 4B 22 20 72 61 e value="ACK" ra
+15:57:37: DEBUG: printBuffer:6058 77 6D 6F 64 65 3D 22 74 72 75 65 22 20 2F 3E 3C wmode="true" /><
+15:57:37: DEBUG: printBuffer:6058 2F 64 61 74 61 3E                               /data>
+15:57:37: DEBUG: printBuffer:6071 
+
+
+15:57:37: DEBUG: XML FILE (91 bytes): CharsInBuffer=182-91=91
+-------------------------------------------------------------------------------------------
+<?xml version="1.0" encoding="UTF-8" ?><data><log value="start 5570560, num 2048" /></data>
+-------------------------------------------------------------------------------------------
+
+15:57:37: INFO: TARGET SAID: 'start 5570560, num 2048'
+15:57:37: DEBUG: XML FILE (91 bytes): CharsInBuffer=91-91=0
+-------------------------------------------------------------------------------------------
+<?xml version="1.0" encoding="UTF-8" ?><data><response value="ACK" rawmode="true" /></data>
+-------------------------------------------------------------------------------------------
+
+15:57:37: DEBUG: Response was 'ACK'
+15:57:37: DEBUG: CHANNEL DATA (P0020) (H00222) (1.00 MB) - HOST TO TARGET -->
+15:57:37: INFO: FILE ACCESS SLOW!!    1.00 MB in  0.015 seconds (  66.67 MBps) --- Overall to target  0.047 seconds (21.28 MBps)
+15:57:37: INFO: {percent files transferred 100.00%}
+15:57:37: DEBUG: CharsInBuffer=0 Trying to read from USB 4096 bytes
+15:57:37: DEBUG: CHANNEL DATA (191 bytes) <-- TARGET to HOST
+15:57:37: DEBUG: CharsInBuffer = 191
+15:57:37: DEBUG: printBuffer:5981 PRETTYPRINT Buffer is 191 bytes
+
+15:57:37: DEBUG: printBuffer:6058 3C 3F 78 6D 6C 20 76 65 72 73 69 6F 6E 3D 22 31 <?xml version="1
+15:57:37: DEBUG: printBuffer:6058 2E 30 22 20 65 6E 63 6F 64 69 6E 67 3D 22 55 54 .0" encoding="UT
+15:57:37: DEBUG: printBuffer:6058 46 2D 38 22 20 3F 3E 3C 64 61 74 61 3E 3C 6C 6F F-8" ?><data><lo
+15:57:37: DEBUG: printBuffer:6058 67 20 76 61 6C 75 65 3D 22 46 69 6E 69 73 68 65 g value="Finishe
+15:57:37: DEBUG: printBuffer:6058 64 20 73 65 63 74 6F 72 20 61 64 64 72 65 73 73 d sector address
+15:57:37: DEBUG: printBuffer:6058 20 35 35 37 32 36 30 38 22 20 2F 3E 3C 2F 64 61  5572608" /></da
+15:57:37: DEBUG: printBuffer:6058 74 61 3E 3C 3F 78 6D 6C 20 76 65 72 73 69 6F 6E ta><?xml version
+15:57:37: DEBUG: printBuffer:6058 3D 22 31 2E 30 22 20 65 6E 63 6F 64 69 6E 67 3D ="1.0" encoding=
+15:57:37: DEBUG: printBuffer:6058 22 55 54 46 2D 38 22 20 3F 3E 3C 64 61 74 61 3E "UTF-8" ?><data>
+15:57:37: DEBUG: printBuffer:6058 3C 72 65 73 70 6F 6E 73 65 20 76 61 6C 75 65 3D <response value=
+15:57:37: DEBUG: printBuffer:6058 22 41 43 4B 22 20 72 61 77 6D 6F 64 65 3D 22 66 "ACK" rawmode="f
+15:57:37: DEBUG: printBuffer:6058 61 6C 73 65 22 20 2F 3E 3C 2F 64 61 74 61 3E    alse" /></data>
+15:57:37: DEBUG: printBuffer:6071 
+
+
+15:57:37: DEBUG: XML FILE (99 bytes): CharsInBuffer=191-99=92
+-------------------------------------------------------------------------------------------
+<?xml version="1.0" encoding="UTF-8" ?><data><log value="Finished sector address 5572608" /></data>
+-------------------------------------------------------------------------------------------
+
+15:57:37: INFO: TARGET SAID: 'Finished sector address 5572608'
+15:57:37: DEBUG: XML FILE (92 bytes): CharsInBuffer=92-92=0
+-------------------------------------------------------------------------------------------
+<?xml version="1.0" encoding="UTF-8" ?><data><response value="ACK" rawmode="false" /></data>
+-------------------------------------------------------------------------------------------
+
+15:57:37: DEBUG: Response was 'ACK'
+15:57:37: INFO: 
+15:57:37: INFO: =======================================================
+15:57:37: INFO: ==================== {SUCCESS} ========================
+15:57:37: INFO: =======================================================
+
+
+15:57:37: INFO: {percent files transferred 100.00%}
+15:57:37: INFO: Sending <setbootablestoragedrive>
+15:57:37: DEBUG: CHANNEL DATA (P0021) (H00223) (     93 bytes) - HOST TO TARGET -->
+===========================================================================================================
+<?xml version="1.0" encoding="UTF-8" ?>
+<data>
+<setbootablestoragedrive value="0" />
+</data>
+
+============================================================================================================
+
+15:57:37: DEBUG: CharsInBuffer=0 Trying to read from USB 4096 bytes
+15:57:37: DEBUG: CHANNEL DATA (168 bytes) <-- TARGET to HOST
+15:57:37: DEBUG: CharsInBuffer = 168
+15:57:37: DEBUG: printBuffer:5981 PRETTYPRINT Buffer is 168 bytes
+
+15:57:37: DEBUG: printBuffer:6058 3C 3F 78 6D 6C 20 76 65 72 73 69 6F 6E 3D 22 31 <?xml version="1
+15:57:37: DEBUG: printBuffer:6058 2E 30 22 20 65 6E 63 6F 64 69 6E 67 3D 22 55 54 .0" encoding="UT
+15:57:37: DEBUG: printBuffer:6058 46 2D 38 22 20 3F 3E 3C 64 61 74 61 3E 3C 6C 6F F-8" ?><data><lo
+15:57:37: DEBUG: printBuffer:6058 67 20 76 61 6C 75 65 3D 22 53 65 74 20 62 6F 6F g value="Set boo
+15:57:37: DEBUG: printBuffer:6058 74 61 62 6C 65 20 64 72 69 76 65 20 74 6F 20 30 table drive to 0
+15:57:37: DEBUG: printBuffer:6058 2E 22 20 2F 3E 3C 2F 64 61 74 61 3E 3C 3F 78 6D ." /></data><?xm
+15:57:37: DEBUG: printBuffer:6058 6C 20 76 65 72 73 69 6F 6E 3D 22 31 2E 30 22 20 l version="1.0" 
+15:57:37: DEBUG: printBuffer:6058 65 6E 63 6F 64 69 6E 67 3D 22 55 54 46 2D 38 22 encoding="UTF-8"
+15:57:37: DEBUG: printBuffer:6058 20 3F 3E 3C 64 61 74 61 3E 3C 72 65 73 70 6F 6E  ?><data><respon
+15:57:37: DEBUG: printBuffer:6058 73 65 20 76 61 6C 75 65 3D 22 41 43 4B 22 20 2F se value="ACK" /
+15:57:37: DEBUG: printBuffer:6058 3E 3C 2F 64 61 74 61 3E                         ></data>
+15:57:37: DEBUG: printBuffer:6071 
+
+
+15:57:37: DEBUG: XML FILE (92 bytes): CharsInBuffer=168-92=76
+-------------------------------------------------------------------------------------------
+<?xml version="1.0" encoding="UTF-8" ?><data><log value="Set bootable drive to 0." /></data>
+-------------------------------------------------------------------------------------------
+
+15:57:37: INFO: TARGET SAID: 'Set bootable drive to 0.'
+15:57:37: DEBUG: XML FILE (76 bytes): CharsInBuffer=76-76=0
+-------------------------------------------------------------------------------------------
+<?xml version="1.0" encoding="UTF-8" ?><data><response value="ACK" /></data>
+-------------------------------------------------------------------------------------------
+
+15:57:37: DEBUG: Response was 'ACK'
+15:57:37: DEBUG: Got the ACK
+15:57:37: INFO: Sending <power>
+15:57:37: DEBUG: CHANNEL DATA (P0022) (H00224) (     99 bytes) - HOST TO TARGET -->
+===========================================================================================================
+<?xml version="1.0" encoding="UTF-8" ?>
+<data>
+<power DelayInSeconds="10" value="reset" />
+</data>
+
+============================================================================================================
+
+15:57:37: DEBUG: CharsInBuffer=0 Trying to read from USB 4096 bytes
+15:57:37: DEBUG: CHANNEL DATA (76 bytes) <-- TARGET to HOST
+15:57:37: DEBUG: CharsInBuffer = 76
+15:57:37: DEBUG: printBuffer:5981 PRETTYPRINT Buffer is 76 bytes
+
+15:57:37: DEBUG: printBuffer:6058 3C 3F 78 6D 6C 20 76 65 72 73 69 6F 6E 3D 22 31 <?xml version="1
+15:57:37: DEBUG: printBuffer:6058 2E 30 22 20 65 6E 63 6F 64 69 6E 67 3D 22 55 54 .0" encoding="UT
+15:57:37: DEBUG: printBuffer:6058 46 2D 38 22 20 3F 3E 3C 64 61 74 61 3E 3C 72 65 F-8" ?><data><re
+15:57:37: DEBUG: printBuffer:6058 73 70 6F 6E 73 65 20 76 61 6C 75 65 3D 22 41 43 sponse value="AC
+15:57:37: DEBUG: printBuffer:6058 4B 22 20 2F 3E 3C 2F 64 61 74 61 3E             K" /></data>
+15:57:37: DEBUG: printBuffer:6071 
+
+
+15:57:37: DEBUG: XML FILE (76 bytes): CharsInBuffer=76-76=0
+-------------------------------------------------------------------------------------------
+<?xml version="1.0" encoding="UTF-8" ?><data><response value="ACK" /></data>
+-------------------------------------------------------------------------------------------
+
+15:57:37: DEBUG: Response was 'ACK'
+15:57:37: DEBUG: Got the ACK
+15:57:37: INFO: ==============================================================
+15:57:37: INFO: Files used and their paths
+15:57:37: INFO:   1 'C:\Users\Z\Desktop\小天才工具\Qt_XTC_box\adb\port_trace.txt'
+15:57:37: INFO:   2 './framework/Z8_SNB.xml'
+15:57:37: INFO:   3 './framework/Z8.img'
+15:57:37: INFO:   4 './framework/misc.img'
+15:57:37: INFO:      _             (done)
+15:57:37: INFO:     | |                 
+15:57:37: INFO:   __| | ___  _ __   ___ 
+15:57:37: INFO:  / _` |/ _ \| '_ \ / _ \
+15:57:37: INFO: | (_| | (_) | | | |  __/
+15:57:37: INFO:  \__,_|\___/|_| |_|\___|
+15:57:37: INFO: {All Finished Successfully}
+
+15:57:37: INFO: Overall to target  1.250 seconds (13.87 MBps)
+15:57:37: INFO: {percent files transferred 100.00%}

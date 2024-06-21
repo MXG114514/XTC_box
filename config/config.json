@@ -1,19 +1,16 @@
 {
-    "adb": {
-        "shell": true
-    },
     "Update": {
         "CheckUpdateAtStartUp": true
     },
     "MainWindow": {
-        "DpiScale": 1,
+        "DpiScale": "Auto",
         "EnableAcrylicBackground": true,
-        "MinimizeToTray": true,
+        "MinimizeToTray": false,
         "PlayBarColor": "#ff225c7f",
         "RecentPlayNumbers": 300
     },
     "QFluentWidgets": {
         "ThemeColor": "#ff009faa",
-        "ThemeMode": "Auto"
+        "ThemeMode": "Dark"
     }
 }
