@@ -17,3 +17,6 @@ pip install "PyQt-Fluent-Widgets[full]" -i https://pypi.org/simple/
 
 # V0.5:
 完成了屏幕工具和一键root工具，修复大量bug
+
+# V0.6:
+修复了一键root工具，增加了两项功能（画大饼），wifi调试预计在下个版本完成
